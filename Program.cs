@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.OpenApi;
 using StackExchange.Redis;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 using Leaderboard.Repositories;
 using Leaderboard.Models;
@@ -18,11 +20,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 string redisConnectionString = builder.Configuration.GetConnectionString("Redis")!;
 ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisConnectionString);
-builder.Services.AddScoped(provider => redis);
+builder.Services.AddSingleton(provider => redis);
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConsole();
+    loggingBuilder.AddDebug();
+});
 
 builder.Services.AddControllers();
 
@@ -47,6 +55,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
 		ValidIssuer = builder.Configuration["Jwt:Issuer"],
 		ValidAudience = builder.Configuration["Jwt:Audience"],
+		NameClaimType = ClaimTypes.Name,
+		RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 
