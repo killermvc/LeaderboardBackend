@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
 
 using Leaderboard.Models;
 using Leaderboard.Repositories;
@@ -11,58 +14,132 @@ namespace Leaderboard.Controllers;
 public class ScoreController(
 		IScoreRepository scoreRepository,
 		IGameRepository gameRepository,
-		IUserRepository userRepository)
+		IUserRepository userRepository,
+		ILogger<ScoreController> logger)
 	: ControllerBase
 {
 
 	private readonly IScoreRepository _scoreRepository = scoreRepository;
 	private readonly IGameRepository _gameRepository = gameRepository;
 	private readonly IUserRepository _userRepository = userRepository;
+	private readonly ILogger _logger = logger;
 
+	//POST /scores
     [HttpPost("submit")]
     [Authorize]
     public async Task<IActionResult> SubmitScore([FromBody] ScoreRequest request)
     {
-        var userId = User.FindFirst("sub")?.Value;
-
-        if (userId == null)
+        if (!ModelState.IsValid)
         {
-            return Unauthorized("Invalid token");
+            return BadRequest(ModelState);
         }
 
-		var user = await _userRepository.GetUserByIdAsync(int.Parse(userId));
-		if(user == null)
-		{
-			return Unauthorized("Invalid token");
-		}
+        var userIdClaim = User.Identity?.Name;
 
-		var game = await _gameRepository.GetGameByIdAsync(int.Parse(request.GameId));
-		if(game == null)
-		{
-			return BadRequest("Invalid game ID");
-		}
+		if (!int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized("Invalid user token.");
+        }
 
-		var score = new Score
-		{
-			User = user,
-			Value = request.Score,
-			Game = game,
-		};
-		await _scoreRepository.AddAsync(score);
-
-        return Ok(new { Message = "Score submitted successfully", UserId = userId });
+        try
+        {
+            // Submit the score through the repository
+            await _scoreRepository.SubmitScoreAsync(userId, request.GameId, request.Score);
+            return Ok("Score submitted successfully.");
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error submitting score.");
+            return StatusCode(500, "An error occurred while submitting the score.");
+        }
     }
 
-	[HttpPost("{game_id?}")]
-	[Authorize]
-	public IActionResult GetGlobalLeaderBoard(int game_id)
+	//GET /leaderboard/<game_id>
+    [HttpGet]
+    [Route("leaderboard/{gameId}")]
+    public async Task<IActionResult> GetLeaderboard(int gameId, [FromQuery] int limit = 10)
+    {
+        try
+        {
+            var leaderboard = await _scoreRepository.GetLeaderboardAsync(gameId, limit);
+			return Ok(leaderboard);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving leaderboard.");
+            return StatusCode(500, "An error occurred while retrieving the leaderboard.");
+        }
+    }
+
+	//GET /leaderboard/<game_id>/rank/<user_id>
+	[HttpGet]
+	[Route("leaderboard/{gameId}/rank/{userId}")]
+	public async Task<IActionResult> GetRank(int gameId, int userId)
 	{
-		return Ok("");
+		try
+		{
+			var rank = await _scoreRepository.GetRankAsync(gameId, userId);
+			if(rank == null)
+			{
+				return NotFound("User not found in leaderboard.");
+			}
+			return Ok(new
+            {
+                gameId,
+                userId,
+                rank
+            });
+
+		}
+		catch (KeyNotFoundException ex)
+		{
+			return NotFound(ex.Message);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving rank.");
+			return StatusCode(500, "An error occurred while retrieving the rank.");
+		}
+	}
+
+	//GET /leaderboard/<game_id>/top/<N>
+	[HttpGet]
+	[Route("leaderboard/{gameId}/top/{limit}")]
+	public async Task<IActionResult> GetTopPlayers(int gameId, int limit)
+	{
+		try
+		{
+			var leaderboard = await _scoreRepository.GetLeaderboardAsync(gameId, limit);
+			return Ok(new
+            {
+                gameId,
+				limit,
+                leaderboard
+            });
+		}
+		catch (KeyNotFoundException ex)
+		{
+			return NotFound(ex.Message);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving leaderboard.");
+			return StatusCode(500, "An error occurred while retrieving the leaderboard.");
+		}
 	}
 }
 
+
 public class ScoreRequest
 {
-    public required string GameId { get; set; }
+    public required int GameId { get; set; }
     public int Score { get; set; }
 }
