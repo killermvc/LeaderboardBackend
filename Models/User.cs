@@ -10,6 +10,6 @@ public class User
 	public string? Username {get; set;}
 	[Required]
 	public string? PasswordHash {get; set;}
-	public List<UserRole> Roles {get; set;} = [];
+	public List<UserRole> UserRoles {get; set;} = [];
 
 }
