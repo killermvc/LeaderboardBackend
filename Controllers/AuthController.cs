@@ -53,13 +53,13 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 	private string GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
-        {
-			new (JwtRegisteredClaimNames.Sub, user.Id.ToString())
-        };
-
-		foreach(UserRole role in user.Roles)
 		{
-			claims.Add(new (ClaimTypes.Role, Enum.GetName<UserRole>(role)!));
+			new(ClaimTypes.Name, user.Id.ToString())
+		};
+
+		foreach(UserRole userRole in user.UserRoles)
+		{
+			claims.Add(new (ClaimTypes.Role, userRole.Role.Name));
 		}
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
