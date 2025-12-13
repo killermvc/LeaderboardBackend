@@ -23,7 +23,7 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 	{
 		if (await _userRepository.GetUserByNameAsync(request.UserName!) != null)
         {
-            return BadRequest("User already exists");
+            return BadRequest(new { Message = "Username already exists" });
         }
 
 		var user = new User
@@ -32,7 +32,7 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 			PasswordHash = BCryptClass.HashPassword(request.Password)
 		};
 		await _userRepository.AddUserAsync(user);
-		return Ok("User registered succesfully");
+		return Ok(new { Message = "User registered successfully" });
 	}
 
 	[HttpPost("login")]
@@ -42,12 +42,12 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 
 		if(user == null || !BCryptClass.Verify(request.Password, user.PasswordHash))
 		{
-			return Unauthorized("Invalid credentials");
+			return Unauthorized(new {Message = "Invalid username or password"});
 		}
 
 		string token = GenerateJwtToken(user);
 
-		return Ok(new {Token = token});
+		return Ok(new {Token = token, Message = "Login successful"});
 	}
 
 	private string GenerateJwtToken(User user)

@@ -1,0 +1,41 @@
+@use 'sass:color';
+
+form {
+	display: flex;
+	flex-direction: column;
+	max-width: 400px;
+	margin: 0 auto;
+
+	label {
+		margin-bottom: 8px;
+	}
+
+	input {
+		margin-bottom: 16px;
+		padding: 8px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+
+		&:focus {
+			border-color: #007bff;
+			outline: none;
+		}
+	}
+
+	button {
+		padding: 10px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+
+		&:hover {
+			background-color: color.adjust(#007bff, $lightness: -10%);
+		}
+	}
+}
+
+p {
+	text-align: center;
+}

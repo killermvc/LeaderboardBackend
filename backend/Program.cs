@@ -32,6 +32,20 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddDebug();
 });
 
+if(builder.Configuration["Cors:Origins"] is not null)
+{
+	builder.Services.AddCors(options =>
+	{
+		options.AddDefaultPolicy(policy =>
+		{
+			policy.WithOrigins(builder.Configuration["Cors:Origins"]!.Split(","))
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		});
+	});
+}
+
+
 builder.Services.AddControllers();
 
 
@@ -86,10 +100,12 @@ if (app.Environment.IsDevelopment())
 	app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors();
 
 app.MapControllers();
 
