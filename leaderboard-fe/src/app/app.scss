@@ -1,0 +1,8 @@
+/* Main content wrapper to provide offset for fixed header */
+.main-content {
+	box-sizing: border-box;
+	padding-top: var(--header-height);
+	padding-left: 16px;
+	padding-right: 16px;
+	min-height: calc(100vh - var(--header-height));
+}
