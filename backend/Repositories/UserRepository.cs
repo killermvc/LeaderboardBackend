@@ -44,4 +44,21 @@ public class UserRepository(AppDbContext context) : IUserRepository
 		await _context.Users.AddAsync(user);
 		await _context.SaveChangesAsync();
 	}
+
+	public async Task UpdateUserAsync(User user)
+	{
+		_context.Users.Update(user);
+		await _context.SaveChangesAsync();
+	}
+
+	public async Task AddRoleToUserAsync(User user, Role role)
+	{
+		var userRole = new UserRole
+		{
+			UserId = user.Id,
+			RoleId = role.Id
+		};
+		await _context.UserRoles.AddAsync(userRole);
+		await _context.SaveChangesAsync();
+	}
 }
