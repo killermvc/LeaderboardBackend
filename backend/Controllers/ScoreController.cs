@@ -135,6 +135,38 @@ public class ScoreController(
 			return StatusCode(500, "An error occurred while retrieving the leaderboard.");
 		}
 	}
+
+	[HttpGet]
+	[Route("scores/user/{userId}")]
+	public async Task<IActionResult> GetScoresByUser(int userId, [FromQuery] int limit = 10, [FromQuery] int offset = 0)
+	{
+		try
+		{
+			var scores = await _scoreRepository.GetScoresByUserAsync(userId, limit, offset);
+			return Ok(scores);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving scores by user.");
+			return StatusCode(500, "An error occurred while retrieving the scores.");
+		}
+	}
+
+	[HttpGet]
+	[Route("scores/recent")]
+	public async Task<IActionResult> GetRecentScores([FromQuery] int limit = 10, [FromQuery] int offset = 0)
+	{
+		try
+		{
+			var scores = await _scoreRepository.GetRecentScoresAsync(limit, offset);
+			return Ok(scores);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving recent scores.");
+			return StatusCode(500, "An error occurred while retrieving the recent scores.");
+		}
+	}
 }
 
 

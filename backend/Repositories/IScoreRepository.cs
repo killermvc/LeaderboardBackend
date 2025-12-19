@@ -9,4 +9,6 @@ public interface IScoreRepository
 	public Task<List<LeaderboardEntry>> GetLeaderboardAsync(int game, int limit);
 	public Task<long?> GetRankAsync(int game, int user);
 	public Task<List<LeaderboardEntry>> GetTopPlayersAsync(DateTime start_date, DateTime end_date, int limit);
+	public Task<List<Score>> GetScoresByUserAsync(int userId, int limit, int offset);
+	public Task<List<Score>> GetRecentScoresAsync(int limit, int offset);
 }

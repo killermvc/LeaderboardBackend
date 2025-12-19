@@ -185,6 +185,24 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 		return topPlayers;
 	}
 
+	public Task<List<Score>> GetScoresByUserAsync(int userId, int limit, int offset)
+	{
+		return _context.Scores
+			.Where(s => s.User.Id == userId)
+			.OrderByDescending(s => s.DateAchieved)
+			.Skip(offset)
+			.Take(limit)
+			.ToListAsync();
+	}
+	public Task<List<Score>> GetRecentScoresAsync(int limit, int offset)
+	{
+		return _context.Scores
+			.OrderByDescending(s => s.DateAchieved)
+			.Skip(offset)
+			.Take(limit)
+			.ToListAsync();
+	}
+
 }
 
 public class LeaderboardEntry
