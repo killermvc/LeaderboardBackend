@@ -188,6 +188,9 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 	public Task<List<Score>> GetScoresByUserAsync(int userId, int limit, int offset)
 	{
 		return _context.Scores
+			.AsNoTracking()
+			.Include(s => s.User)
+			.Include(s => s.Game)
 			.Where(s => s.User.Id == userId)
 			.OrderByDescending(s => s.DateAchieved)
 			.Skip(offset)
@@ -197,6 +200,9 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 	public Task<List<Score>> GetRecentScoresAsync(int limit, int offset)
 	{
 		return _context.Scores
+			.AsNoTracking()
+			.Include(s => s.User)
+			.Include(s => s.Game)
 			.OrderByDescending(s => s.DateAchieved)
 			.Skip(offset)
 			.Take(limit)

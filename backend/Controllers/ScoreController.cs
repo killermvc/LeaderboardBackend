@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 using Leaderboard.Models;
 using Leaderboard.Repositories;
+using Leaderboard.Dtos;
 
 namespace Leaderboard.Controllers;
 
@@ -15,8 +16,8 @@ public class ScoreController(
 		IScoreRepository scoreRepository,
 		IGameRepository gameRepository,
 		IUserRepository userRepository,
-		ILogger<ScoreController> logger)
-	: ControllerBase
+		ILogger<ScoreController> logger
+	) : ControllerBase
 {
 
 	private readonly IScoreRepository _scoreRepository = scoreRepository;
@@ -143,7 +144,16 @@ public class ScoreController(
 		try
 		{
 			var scores = await _scoreRepository.GetScoresByUserAsync(userId, limit, offset);
-			return Ok(scores);
+			var dtos = scores.Select(s => new ScoreDto
+			{
+				Id = s.Id,
+				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
+				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
+				Value = s.Value,
+				DateAchieved = s.DateAchieved
+			}).ToList();
+
+			return Ok(dtos);
 		}
 		catch (Exception ex)
 		{
@@ -159,7 +169,16 @@ public class ScoreController(
 		try
 		{
 			var scores = await _scoreRepository.GetRecentScoresAsync(limit, offset);
-			return Ok(scores);
+			var dtos = scores.Select(s => new ScoreDto
+			{
+				Id = s.Id,
+				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
+				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
+				Value = s.Value,
+				DateAchieved = s.DateAchieved
+			}).ToList();
+
+			return Ok(dtos);
 		}
 		catch (Exception ex)
 		{

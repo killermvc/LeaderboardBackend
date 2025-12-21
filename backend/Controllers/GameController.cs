@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using Leaderboard.Models;
 using Leaderboard.Repositories;
+using Leaderboard.Dtos;
 
 namespace Leaderboard.Controllers
 {
@@ -22,21 +23,23 @@ namespace Leaderboard.Controllers
 		// POST: api/Games
 		[HttpPost]
 		[Authorize(Roles = "Admin")]
-		public async Task<ActionResult<Game>> PostGame(Game game)
+		public async Task<ActionResult<GameDto>> PostGame(GameDto gameDto)
 		{
+			var game = new Game { Name = gameDto.Name };
 			await _gameRepository.AddAsync(game);
-			return CreatedAtAction("GetGame", new { id = game.Id }, game);
+			var resultDto = new GameDto { Id = game.Id, Name = game.Name };
+			return CreatedAtAction("GetGame", new { id = game.Id }, resultDto);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Game>> GetGame(int id)
+		public async Task<ActionResult<GameDto>> GetGame(int id)
 		{
 			var game = await _gameRepository.GetGameByIdAsync(id);
 			if (game == null)
 			{
 				return NotFound();
 			}
-			return game;
+			return new GameDto { Id = game.Id, Name = game.Name };
 		}
     }
 }

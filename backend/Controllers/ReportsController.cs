@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 using Leaderboard.Models;
 using Leaderboard.Repositories;
+using Leaderboard.Dtos;
 
 namespace Leaderboard.Controllers;
 
@@ -27,11 +26,18 @@ public class ReportsController(IScoreRepository scoreRepository, ILogger<Reports
             }
 
             var topPlayers = await _scoreRepository.GetTopPlayersAsync(start_date, end_date, limit);
+            var dto = topPlayers.Select(tp => new LeaderboardEntryDto
+            {
+                UserId = tp.UserId,
+                UserName = tp.UserName,
+                Score = tp.Score
+            }).ToList();
+
             return Ok(new
             {
                 start_date,
                 end_date,
-                top_players = topPlayers
+                top_players = dto
             });
         }
         catch (Exception ex)
