@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 using Leaderboard.Repositories;
 using Leaderboard.Models;
+using Leaderboard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddSingleton(provider => redis);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddLogging(loggingBuilder =>
 {
