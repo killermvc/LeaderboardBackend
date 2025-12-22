@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Leaderboard.Repositories;
 using Leaderboard.Models;
 using Microsoft.OpenApi.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Leaderboard.Controllers;
 
@@ -51,13 +52,20 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 	}
 
 	[HttpPut]
+	[Authorize]
 	public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
 	{
-		User? user = await _userRepository.GetUserByNameAsync(request.UserName!);
+		var userIdClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+		if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+		{
+			return Unauthorized(new { Message = "Invalid token" });
+		}
+
+		User? user = await _userRepository.GetUserByIdAsync(userId);
 
 		if(user == null || !BCryptClass.Verify(request.OldPassword, user.PasswordHash))
 		{
-			return Unauthorized(new {Message = "Invalid username or password"});
+			return Unauthorized(new {Message = "Invalid password"});
 		}
 
 		user.PasswordHash = BCryptClass.HashPassword(request.NewPassword);
@@ -67,6 +75,7 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 	}
 
 	[HttpPut("promote/{userId}")]
+	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> PromoteToAdmin([FromRoute] int userId)
 	{
 		User? user = await _userRepository.GetUserByIdAsync(userId);
@@ -82,15 +91,22 @@ public class AuthController(IConfiguration config, IUserRepository userRepositor
 	}
 
 	[HttpPut("username")]
+	[Authorize]
 	public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameRequest request)
 	{
-		if (string.IsNullOrWhiteSpace(request.OldUserName) || string.IsNullOrWhiteSpace(request.NewUserName))
+		var userIdClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+		if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+		{
+			return Unauthorized(new { Message = "Invalid token" });
+		}
+
+		if (string.IsNullOrWhiteSpace(request.NewUserName))
 			return BadRequest(new { Message = "Invalid username" });
 
 		if (await _userRepository.GetUserByNameAsync(request.NewUserName!) != null)
 			return BadRequest(new { Message = "Username already exists" });
 
-		User? user = await _userRepository.GetUserByNameAsync(request.OldUserName!);
+		User? user = await _userRepository.GetUserByIdAsync(userId);
 		if (user == null)
 			return NotFound(new { Message = "User not found" });
 
@@ -134,13 +150,11 @@ public class CredentialsRequest
 
 public class UpdateUsernameRequest
 {
-	public string? OldUserName { get; set; }
 	public string? NewUserName { get; set; }
 }
 
 public class ChangePasswordRequest
 {
-	public string? UserName { get; set; }
 	public string? OldPassword { get; set; }
 	public string? NewPassword { get; set; }
 }
