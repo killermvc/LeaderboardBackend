@@ -37,4 +37,19 @@ public class GameRepository(AppDbContext context) : IGameRepository
 	{
 		return await _context.Games.FirstOrDefaultAsync(g => g.Name == name);
 	}
+
+	public async Task<List<Game>> GetAllGamesAsync()
+	{
+		return await _context.Games.ToListAsync();
+	}
+
+	public async Task<List<Game>> GetGamesByPlayerIdAsync(int playerId)
+	{
+		var games = await _context.Scores
+			.Where(s => s.User.Id == playerId)
+			.Select(s => s.Game)
+			.Distinct()
+			.ToListAsync();
+		return games;
+	}
 }

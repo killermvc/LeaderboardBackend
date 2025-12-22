@@ -15,9 +15,8 @@ namespace Leaderboard.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController(AppDbContext context, IGameRepository gameRepository) : ControllerBase
+    public class GameController(IGameRepository gameRepository) : ControllerBase
     {
-        private readonly AppDbContext _context = context;
 		private readonly IGameRepository _gameRepository = gameRepository;
 
 		// POST: api/Games
@@ -41,5 +40,40 @@ namespace Leaderboard.Controllers
 			}
 			return new GameDto { Id = game.Id, Name = game.Name };
 		}
-    }
+
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<GameDto>>> GetAllGames(int limit, int offset)
+		{
+			try
+			{
+				List<Game> games = await _gameRepository.GetAllGamesAsync();
+				var pagedGames = games.Skip(offset).Take(limit);
+				var gameDtos = pagedGames.Select(g => new GameDto
+				{
+					Id = ((Game)g).Id,
+					Name = ((Game)g).Name
+				});
+				return Ok(gameDtos);
+			}
+			catch (Exception)
+			{
+				return StatusCode(500, "An error occurred while retrieving games.");
+			}
+		}
+
+		[HttpGet("player/{playerId}")]
+		public async Task<ActionResult<IEnumerable<GameDto>>> GetGamesByPlayer(int playerId)
+		{
+			var games = await _gameRepository.GetGamesByPlayerIdAsync(playerId);
+
+			var gameDtos = games.Select(g => new GameDto
+			{
+				Id = g.Id,
+				Name = g.Name
+			});
+
+			return Ok(gameDtos);
+		}
+
+	}
 }
