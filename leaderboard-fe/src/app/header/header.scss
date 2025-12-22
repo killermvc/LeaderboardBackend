@@ -1,6 +1,8 @@
 /* Header layout: align buttons and search on one line */
 .header-bar {
-	background: rgb(104, 16, 155);
+	background: linear-gradient(120deg, #071731 0%, #0a2142 60%, #082e3d 100%);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: 0 12px 24px rgba(3, 7, 18, 0.6);
 	display: flex;
 	position: fixed;
 	top: 0;
@@ -8,7 +10,7 @@
 	width: 100%;
 	box-sizing: border-box;
 	height: var(--header-height);
-	padding: 0 16px;
+	padding: 0 clamp(1rem, 3vw, 2rem);
 	border-radius: 0;
 	z-index: 1000;
 	align-items: center;
@@ -16,23 +18,28 @@
 }
 
 .header-bar > button {
-	background: rgb(104, 16, 155);
-	border: none;
-	padding: 6px 10px;
-	border-radius: 4px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 6px 14px;
+	border-radius: 999px;
 	min-height: 0;
-	height: calc(var(--header-height) - 12px);
-	min-width: 80px;
-	color: white;
+	height: calc(var(--header-height) - 18px);
+	min-width: 90px;
+	color: #ecf9ff;
 	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	font-size: larger;
+	font-size: 1rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	transition: background 0.2s ease, border 0.2s ease, transform 0.2s ease;
 }
 
 .header-bar > button:hover {
-	background: rgb(104, 16, 155);
+	background: rgba(37, 223, 169, 0.18);
+	border-color: rgba(37, 223, 169, 0.5);
+	transform: translateY(-1px);
 }
 
 .header-spacer {
@@ -42,33 +49,43 @@
 .header-search {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 	margin-left: 8px;
 }
 
 .header-search input[type="search"] {
-	padding: 6px 8px;
-	color: white;
+	padding: 0.4rem 0.75rem;
+	color: #e2f3ff;
 	min-height: 0;
-	height: calc(var(--header-height) - 12px);
-	background: rgb(75, 11, 112);
-	border-radius: 4px;
-	border: 1px solid rgba(0,0,0,0.12);
-	min-width: 180px;
+	height: calc(var(--header-height) - 18px);
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	min-width: 200px;
+	transition: background 0.2s ease, border 0.2s ease;
+
+	&:focus {
+		background: rgba(255, 255, 255, 0.16);
+		border-color: rgba(26, 160, 255, 0.6);
+		outline: none;
+	}
 }
 
 .header-search button[type="submit"] {
 	padding: 6px 8px;
 	border: none;
 	min-height: 0;
-	height: calc(var(--header-height) - 12px);
+	height: calc(var(--header-height) - 18px);
 	background: transparent;
+	color: #8db6ff;
 	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	border-radius: 50%;
+	transition: background 0.2s ease;
 }
 
 .header-search button[type="submit"]:hover {
-	background: rgba(0, 0, 0, 0.04);
+	background: rgba(255, 255, 255, 0.08);
 }

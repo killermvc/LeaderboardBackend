@@ -1,0 +1,92 @@
+<div class="home-shell">
+	<section class="hero">
+		<p class="eyebrow">Near real-time activity</p>
+		<h1>Your position in the competitions</h1>
+		<p class="lede">
+			Explore the latest global records and see how your most recent games are doing.
+		</p>
+	</section>
+
+	<div class="panels-grid">
+		<section class="panel recent">
+			<header class="panel-header">
+				<div>
+					<p class="eyebrow">Global</p>
+					<h2>Recent scores</h2>
+				</div>
+				@if (loadingRecent) {
+					<span class="state-chip">Loading…</span>
+				}
+			</header>
+
+			@if (!loadingRecent) {
+				@if (recentError) {
+					<div class="state-chip state-error">{{ recentError }}</div>
+				}
+				@if (recentScores.length) {
+					<ul class="score-list">
+						@for (score of recentScores; track score) {
+							<li>
+								<div class="player-block">
+									<p class="player-name">{{ score.user.username ?? 'Anonymous player' }}</p>
+									<p class="game-name">{{ score.game.name }}</p>
+								</div>
+								<div class="score-meta">
+									<span class="score-value">{{ score.value | number }}</span>
+									<span class="score-date">{{ score.dateAchieved | date:'MMM d, HH:mm' }}</span>
+								</div>
+							</li>
+						}
+					</ul>
+				} @else {
+					<p class="empty-state">Be the first to record a score today.</p>
+				}
+			} @else {
+				<div class="state-chip">Loading…</div>
+			}
+		</section>
+
+		<section class="panel mine">
+			<header class="panel-header">
+				<div>
+					<p class="eyebrow">Your activity</p>
+					<h2>My recent scores</h2>
+				</div>
+				@if (loadingMine && authService.isAuthenticated()) {
+					<span class="state-chip">Loading…</span>
+				}
+			</header>
+
+			@if (authService.isAuthenticated()) {
+				@if (!loadingMine) {
+					@if (myError) {
+						<div class="state-chip state-error">{{ myError }}</div>
+					}
+					@if (myScores.length) {
+						<ul class="score-list">
+							@for (score of myScores; track score) {
+								<li>
+									<div class="player-block">
+										<p class="player-name">{{ score.game.name }}</p>
+										<p class="game-name">Recorded on {{ score.dateAchieved | date:'MMM d, HH:mm' }}</p>
+									</div>
+									<div class="score-meta">
+										<span class="score-value">{{ score.value | number }}</span>
+									</div>
+								</li>
+							}
+						</ul>
+					} @else {
+						<p class="empty-state">You haven't logged any recent games yet.</p>
+					}
+				} @else {
+					<div class="state-chip">Loading…</div>
+				}
+			} @else {
+				<p class="empty-state">
+					Sign in to view your progress and unlock personalized details.
+				</p>
+			}
+		</section>
+	</div>
+</div>

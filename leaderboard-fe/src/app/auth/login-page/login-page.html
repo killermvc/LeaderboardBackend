@@ -1,13 +1,22 @@
-<form>
-  <label for="username">Username:</label>
-  <input type="text" id="username" required />
-  <br />
-  <label for="password">Password:</label>
-  <input type="password" id="password" required />
-  <br />
-  <button type="button" (click)="handleSubmit()">Login</button>
-</form>
-<p>
-	Don't have an account?
-	<a routerLink="/auth/register">Register here</a>
-</p>
+<section class="auth-shell">
+	<div class="auth-panel">
+		<header>
+			<p class="eyebrow">Welcome back</p>
+			<h1>Sign in to keep competing</h1>
+			<p class="lede">Connect your account to record scores and view your rankings.</p>
+		</header>
+		<form class="auth-form">
+			<label for="username">Username</label>
+			<input type="text" id="username" required />
+
+			<label for="password">Password</label>
+			<input type="password" id="password" required />
+
+			<button type="button" (click)="handleSubmit()">Sign in</button>
+		</form>
+		<p class="alt-link">
+			Don't have an account?
+			<a routerLink="/auth/register">Register here</a>
+		</p>
+	</div>
+</section>

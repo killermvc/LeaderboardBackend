@@ -1,41 +1,97 @@
 @use 'sass:color';
 
-form {
+:host {
+	display: block;
+	min-height: 100vh;
+	padding: calc(var(--header-height) + 2rem) clamp(1.25rem, 4vw, 3rem) 3rem;
+	background: linear-gradient(135deg, #050d21 0%, #081f44 55%, #06162a 100%);
+}
+
+.auth-shell {
+	max-width: 520px;
+	margin: 0 auto;
+}
+
+.auth-panel {
+	background: rgba(5, 15, 30, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 20px;
+	padding: clamp(1.5rem, 5vw, 2.75rem);
+	box-shadow: 0 25px 45px rgba(2, 6, 16, 0.55);
+}
+
+.eyebrow {
+	font-size: 0.85rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: #f38bff;
+	margin: 0 0 0.4rem;
+}
+
+h1 {
+	margin: 0 0 0.5rem;
+	font-size: clamp(1.75rem, 4vw, 2.4rem);
+}
+
+.lede {
+	margin: 0 0 1.5rem;
+	color: #a7bdd3;
+	line-height: 1.5;
+}
+
+.auth-form {
 	display: flex;
 	flex-direction: column;
-	max-width: 400px;
-	margin: 0 auto;
+	gap: 0.95rem;
+}
 
-	label {
-		margin-bottom: 8px;
-	}
+.auth-form label {
+	font-weight: 600;
+	color: #e7f1ff;
+}
 
-	input {
-		margin-bottom: 16px;
-		padding: 8px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
+.auth-form input {
+	padding: 0.75rem 0.9rem;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.03);
+	color: #f8fbff;
+	font-size: 1rem;
+	transition: border 0.2s ease, background 0.2s ease;
 
-		&:focus {
-			border-color: #007bff;
-			outline: none;
-		}
-	}
-
-	button {
-		padding: 10px;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-
-		&:hover {
-			background-color: color.adjust(#007bff, $lightness: -10%);
-		}
+	&:focus {
+		border-color: #f38bff;
+		background: rgba(255, 255, 255, 0.08);
+		outline: none;
 	}
 }
 
-p {
+.auth-form button {
+	margin-top: 0.5rem;
+	padding: 0.85rem;
+	border-radius: 12px;
+	border: none;
+	background: linear-gradient(120deg, #f38bff, #6f74ff);
+	color: #050c1d;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+	&:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 10px 20px rgba(111, 116, 255, 0.35);
+	}
+}
+
+.alt-link {
+	margin: 1.25rem 0 0;
 	text-align: center;
+	color: #b2c4da;
+}
+
+.alt-link a {
+	color: #6f74ff;
+	font-weight: 600;
 }

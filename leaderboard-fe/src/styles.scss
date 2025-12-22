@@ -1,5 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global surface + layout primitives */
 :root {
 	color-scheme: light dark;
 	--header-height: 64px; /* used to offset fixed header */
+}
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+html, body {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	background-color: #010712;
+	color: #e2f3ff;
+	font-family: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+	line-height: 1.4;
+}
+
+app-root {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-color: inherit;
 }

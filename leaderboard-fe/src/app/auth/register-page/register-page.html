@@ -1,13 +1,24 @@
-<form>
-  <label for="username">Username:</label>
-  <input type="text" id="username" name="username" required>
+<section class="auth-shell">
+	<div class="auth-panel">
+		<header>
+			<p class="eyebrow">Create your profile</p>
+			<h1>Join the leaderboard</h1>
+			<p class="lede">
+				Register an account to start uploading scores and competing with the community.
+			</p>
+		</header>
+		<form class="auth-form">
+			<label for="username">Username</label>
+			<input type="text" id="username" name="username" required>
 
-  <label for="password">Password:</label>
-  <input type="password" id="password" name="password" required>
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password" required>
 
-  <button type="button" (click)="handleSubmit()">Register</button>
-</form>
-<p>
-	Already have an account?
-	<a routerLink="/auth/login">Login here</a>
-</p>
+			<button type="button" (click)="handleSubmit()">Create account</button>
+		</form>
+		<p class="alt-link">
+			Already have an account?
+			<a routerLink="/auth/login">Log in here</a>
+		</p>
+	</div>
+</section>
