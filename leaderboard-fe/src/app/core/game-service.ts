@@ -1,0 +1,60 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+export interface Game {
+  id: number;
+  name: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class GameService {
+  private readonly baseUrl = `${environment.apiUrl.replace(/\/auth$/, '')}/game`;
+
+  constructor(private http: HttpClient) {}
+
+  /**
+   * Creates a new game (Admin only)
+   * @param name The name of the game
+   * @returns Observable with the created game
+   */
+  createGame(name: string): Observable<Game> {
+    const body = { Name: name };
+    return this.http.post<Game>(this.baseUrl, body);
+  }
+
+  /**
+   * Gets a game by its ID
+   * @param id The game ID
+   * @returns Observable with the game details
+   */
+  getGameById(id: number): Observable<Game> {
+    return this.http.get<Game>(`${this.baseUrl}/${id}`);
+  }
+
+  /**
+   * Gets all games with pagination
+   * @param limit Maximum number of games to return
+   * @param offset Number of games to skip
+   * @returns Observable with an array of games
+   */
+  getAllGames(limit: number = 10, offset: number = 0): Observable<Game[]> {
+    const params = new HttpParams()
+      .set('limit', limit.toString())
+      .set('offset', offset.toString());
+
+    return this.http.get<Game[]>(this.baseUrl, { params });
+  }
+
+  /**
+   * Gets all games played by a specific player
+   * @param playerId The player's user ID
+   * @returns Observable with an array of games
+   */
+  getGamesByPlayer(playerId: number): Observable<Game[]> {
+    return this.http.get<Game[]>(`${this.baseUrl}/player/${playerId}`);
+  }
+}

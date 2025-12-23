@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { AuthService } from '../core/auth-service';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { octSearch, octFeedPerson} from '@ng-icons/octicons';
+import { octSearch, octFeedPerson, octPlus} from '@ng-icons/octicons';
 
 @Component({
   selector: 'app-header',
   imports: [ NgIcon],
-  providers: [provideIcons({ octSearch, octFeedPerson })],
+  providers: [provideIcons({ octSearch, octFeedPerson, octPlus })],
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
 })
@@ -15,8 +15,11 @@ export class Header {
 	constructor(public authService: AuthService, private router: Router) {}
 
 	onSearch(query: string) {
-		//TODO: wire actual search
-		console.log('Header search:', query);
+		if (query.trim()) {
+			this.router.navigate(['/games'], { queryParams: { q: query } });
+		} else {
+			this.router.navigate(['/games']);
+		}
 	}
 
 	onLogout() {
@@ -41,5 +44,8 @@ export class Header {
 	}
 	routeToMyGames() {
 		this.router.navigate(['/mygames'])
+	}
+	routeToNewGame() {
+		throw new Error('Method not implemented.');
 	}
 }

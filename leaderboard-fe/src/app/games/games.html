@@ -1,0 +1,15 @@
+<div class="games-container">
+  <h2>All Games</h2>
+
+  @if (searchQuery()) {
+    <p>Showing results for: <strong>{{ searchQuery() }}</strong></p>
+  }
+
+  <div class="games-grid">
+    @for (game of filteredGames(); track game.id) {
+      <app-game-card [game]="game" (click)="viewGame(game.id)"></app-game-card>
+    } @empty {
+      <p>No games found.</p>
+    }
+  </div>
+</div>

@@ -1,0 +1,30 @@
+.game-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
+  height: 100%;
+  color: #e2f3ff;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(37, 223, 169, 0.5);
+  }
+
+  h3 {
+    margin: 0 0 10px 0;
+    color: #e2f3ff;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(226, 243, 255, 0.7);
+    font-size: 0.9em;
+  }
+}
