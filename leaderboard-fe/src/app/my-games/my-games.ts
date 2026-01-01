@@ -58,7 +58,7 @@ export class MyGames implements OnInit {
   }
 
   viewGame(gameId: number) {
-    console.log('View game', gameId);
+    this.router.navigate(['/games', gameId]);
   }
 
   goToLogin() {

@@ -1,0 +1,103 @@
+<div class="game-detail-shell">
+  <button class="back-btn" (click)="goBack()">← Back to Games</button>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading game details...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" (click)="goBack()">Go Back</button>
+    </div>
+  } @else if (game(); as gameData) {
+    <header class="game-header">
+      <p class="eyebrow">Game Details</p>
+      <h1>{{ gameData.name }}</h1>
+      <p class="game-id">Game ID: {{ gameData.id }}</p>
+    </header>
+
+    <div class="panels-grid">
+      <!-- Leaderboard Panel -->
+      <section class="panel leaderboard-panel">
+        <div class="panel-header">
+          <h2>🏆 Leaderboard</h2>
+          @if (!loadingLeaderboard()) {
+            <span class="state-chip">Top {{ leaderboard().length }}</span>
+          }
+        </div>
+
+        @if (loadingLeaderboard()) {
+          <p class="loading-text">Loading leaderboard...</p>
+        } @else if (leaderboard().length === 0) {
+          <p class="empty-text">No scores yet. Be the first to play!</p>
+        } @else {
+          <ol class="leaderboard-list">
+            @for (entry of leaderboard(); track entry.userId; let i = $index) {
+              <li [class.top-three]="i < 3">
+                <span class="rank">
+                  @switch (i) {
+                    @case (0) { 🥇 }
+                    @case (1) { 🥈 }
+                    @case (2) { 🥉 }
+                    @default { {{ i + 1 }} }
+                  }
+                </span>
+                <span class="player-name">{{ entry.userName ?? 'Unknown Player' }}</span>
+                <span class="player-score">{{ entry.score | number }}</span>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+
+      <!-- Submit Score Panel -->
+      <section class="panel submit-panel">
+        <div class="panel-header">
+          <h2>🎮 Submit Score</h2>
+        </div>
+
+        @if (isLoggedIn()) {
+          <form [formGroup]="scoreForm" (ngSubmit)="submitScore()" class="score-form">
+            <div class="form-group">
+              <label for="score">Your Score</label>
+              <input
+                type="number"
+                id="score"
+                formControlName="score"
+                min="0"
+                placeholder="Enter your score"
+              />
+            </div>
+
+            @if (submitSuccess()) {
+              <div class="success-message">{{ submitSuccess() }}</div>
+            }
+
+            @if (submitError()) {
+              <div class="error-message">{{ submitError() }}</div>
+            }
+
+            <button
+              type="submit"
+              class="btn-primary"
+              [disabled]="scoreForm.invalid || submitting()"
+            >
+              @if (submitting()) {
+                Submitting...
+              } @else {
+                Submit Score
+              }
+            </button>
+          </form>
+        } @else {
+          <div class="login-prompt">
+            <p>You need to be logged in to submit a score.</p>
+            <a routerLink="/auth/login" class="btn-secondary">Login</a>
+            <a routerLink="/auth/register" class="btn-link">or Register</a>
+          </div>
+        }
+      </section>
+    </div>
+  }
+</div>

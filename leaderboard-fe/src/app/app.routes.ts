@@ -5,6 +5,7 @@ import { LoginPage } from './auth/login-page/login-page';
 import { HomePage } from './home-page/home-page';
 import { Games } from './games/games';
 import { MyGames } from './my-games/my-games';
+import { GameDetail } from './game-detail/game-detail';
 
 export const routes: Routes = [
 	  {
@@ -18,6 +19,10 @@ export const routes: Routes = [
 	  {
 		path: 'games',
 		component: Games
+	  },
+	  {
+		path: 'games/:id',
+		component: GameDetail
 	  },
 	  {
 		path: 'mygames',

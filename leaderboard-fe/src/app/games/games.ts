@@ -49,7 +49,6 @@ export class Games implements OnInit {
   }
 
   viewGame(gameId: number) {
-    // Navigate to game details or leaderboard if implemented
-    console.log('View game', gameId);
+    this.router.navigate(['/games', gameId]);
   }
 }
