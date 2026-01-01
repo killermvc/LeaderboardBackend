@@ -18,7 +18,8 @@
 			</button>
 		}
 		<button (click)="routeToProfile()">
-			<ng-icon name="octFeedPerson" size="36px"></ng-icon>
+			<ng-icon name="octFeedPerson" size="24px"></ng-icon>
+			<span class="username">  {{ username() ?? 'Account' }}</span>
 		</button>
 		<button (click)="onLogout()">Logout</button>
 	} @else {

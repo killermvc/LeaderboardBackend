@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -11,7 +11,27 @@ export class AuthService {
 	private readonly apiUrl = environment.apiUrl;
 	private readonly tokenKey = 'lb_token';
 
+	/** Holds the current username when available */
+	public username$ = new BehaviorSubject<string | null>(null);
+
 	constructor(private http: HttpClient) {}
+
+	/** Fetch the currently authenticated user's basic info */
+	getCurrentUser(): Observable<{ id: number; username: string } | null> {
+		return this.http.get<{ id: number; username: string }>(`${this.apiUrl}/me`).pipe(
+			tap((u) => {
+				if (u && u.username) {
+					this.username$.next(u.username);
+				}
+			}),
+			map((u) => u),
+			catchError(() => of(null))
+		);
+	}
+
+	getCachedUsername(): string | null {
+		return this.username$.value;
+	}
 
 	register(userName: string, password: string): Observable<boolean> {
 		const body = { UserName: userName, Password: password };
@@ -37,6 +57,28 @@ export class AuthService {
 
 	logout(): void {
 		localStorage.removeItem(this.tokenKey);
+	}
+
+	changePassword(oldPassword: string, newPassword: string): Observable<boolean> {
+		const body = { OldPassword: oldPassword, NewPassword: newPassword };
+		return this.http.put<any>(`${this.apiUrl}`, body).pipe(
+			map(() => true),
+			catchError(() => of(false))
+		);
+	}
+
+	updateUsername(newUserName: string): Observable<boolean> {
+		const body = { NewUserName: newUserName };
+		return this.http.put<any>(`${this.apiUrl}/username`, body).pipe(
+			map((res) => {
+				if (res) {
+					// Optionally, you might want to update the token or re-login
+					return true;
+				}
+				return false;
+			}),
+			catchError(() => of(false))
+		);
 	}
 
 	getToken(): string | null {

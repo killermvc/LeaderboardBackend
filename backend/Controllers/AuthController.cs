@@ -87,6 +87,24 @@ public class AuthController(IUserRepository userRepository, IJwtService jwtServi
 		return Ok(new {Message = "User promoted to Admin successfully"});
 	}
 
+	// GET: api/auth/me
+	[HttpGet("me")]
+	[Authorize]
+	public async Task<IActionResult> GetCurrentUser()
+	{
+		var userIdClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+		if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+		{
+			return Unauthorized(new { Message = "Invalid token" });
+		}
+
+		User? user = await _userRepository.GetUserByIdAsync(userId);
+		if (user == null)
+			return NotFound(new { Message = "User not found" });
+
+		return Ok(new { Id = user.Id, Username = user.Username });
+	}
+
 	[HttpPut("username")]
 	[Authorize]
 	public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameRequest request)

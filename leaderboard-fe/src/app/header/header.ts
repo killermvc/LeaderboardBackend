@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../core/auth-service';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -12,7 +12,18 @@ import { octSearch, octFeedPerson, octPlus} from '@ng-icons/octicons';
   styleUrls: ['./header.scss'],
 })
 export class Header {
-	constructor(public authService: AuthService, private router: Router) {}
+	public authService = inject(AuthService);
+	private router = inject(Router);
+
+	username = signal<string | null>(null);
+
+	constructor() {
+		if (this.authService.isAuthenticated()) {
+			this.authService.getCurrentUser().subscribe((u) => {
+				if (u) this.username.set(u.username);
+			});
+		}
+	}
 
 	onSearch(query: string) {
 		if (query.trim()) {
@@ -33,7 +44,7 @@ export class Header {
 		this.router.navigate(['/auth/register']);
 	}
 	routeToProfile() {
-		this.router.navigate(['/auth/profile'])
+		this.router.navigate(['/auth/account'])
 	}
 
 	routeToHome() {
