@@ -98,6 +98,17 @@ export class GameDetail implements OnInit {
         this.loadLeaderboard(gameId);
       },
       error: (err) => {
+        // If the backend rejected the score because it's not higher, show that message
+        if (err?.status === 400 && typeof err?.error === 'string') {
+          const msg: string = err.error as string;
+          if (msg.toLowerCase().includes('must be higher')) {
+            this.submitError.set(msg);
+            this.submitting.set(false);
+            // expected validation error — no console logging needed
+            return;
+          }
+        }
+
         this.submitError.set('Failed to submit score. Please try again.');
         this.submitting.set(false);
         console.error('Failed to submit score', err);

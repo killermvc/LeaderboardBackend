@@ -14,18 +14,30 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 	/// <summary>
 	/// Submits a score for a user in a specific game.
 	/// If the game or user does not exist, a KeyNotFoundException is thrown.
+	/// If the new score is lower than or equal to the user's existing highest score, an InvalidOperationException is thrown.
 	/// The score is saved in the SQL database and also added to the Redis leaderboard cache.
 	/// </summary>
 	/// <param name="userId">The ID of the user submitting the score.</param>
 	/// <param name="gameId">The ID of the game for which the score is being submitted.</param>
-	/// /// <param name="scoreValue">The score value to be submitted.</param>
+	/// <param name="scoreValue">The score value to be submitted.</param>
 	/// <exception cref="KeyNotFoundException">Thrown when the specified game or user ID is not found.</exception>
+	/// <exception cref="InvalidOperationException">Thrown when the new score is not higher than the existing highest score.</exception>
 	public async Task SubmitScoreAsync(int userId, int gameId, int scoreValue)
 	{
 		Game game = await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId)
 			?? throw new KeyNotFoundException($"Game with ID {gameId} not found.");
 		User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId)
 			?? throw new KeyNotFoundException($"User with ID {userId} not found");
+
+		// Check if the user already has a higher or equal score for this game
+		var existingHighScore = await _context.Scores
+			.Where(s => s.User.Id == userId && s.Game.Id == gameId)
+			.MaxAsync(s => (int?)s.Value);
+
+		if (existingHighScore.HasValue && scoreValue <= existingHighScore.Value)
+		{
+			throw new InvalidOperationException($"New score ({scoreValue}) must be higher than current high score ({existingHighScore.Value}).");
+		}
 
 		var score = new Score{
 			Value = scoreValue,
@@ -53,7 +65,7 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 
 	/// <summary>
 	/// Updates the leaderboard for a given game in Redis.
-	/// It does this by retrieving the scores for the specified game from the SQL database,
+	/// It does this by retrieving the highest score per user for the specified game from the SQL database,
 	/// ordering them by value descending, and then caching the results in Redis.
 	/// </summary>
 	/// <param name="gameId">The ID of the game.</param>
@@ -61,11 +73,13 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 	{
 		var leaderboardKey = $"leaderboard:{gameId}";
 
+		// Get only the highest score per user for this game
 		var lb = await _context.Scores
 			.Where(s => s.Game.Id == gameId)
 			.Include(s => s.User)
+			.GroupBy(s => new { s.User.Id, s.User.Username })
+			.Select(g => new { g.Key.Id, g.Key.Username, Value = g.Max(s => s.Value) })
 			.OrderByDescending(s => s.Value)
-			.Select(s => new { s.User.Id, s.User.Username, s.Value })
 			.ToListAsync();
 
 			if (lb.Count == 0)
