@@ -7,6 +7,7 @@ export interface Game {
   id: number;
   name: string;
   description: string;
+  imageUrl?: string;
 }
 
 @Injectable({
@@ -21,10 +22,11 @@ export class GameService {
    * Creates a new game (Admin only)
    * @param name The name of the game
    * @param description The description of the game
+   * @param imageUrl The URL of the game's image
    * @returns Observable with the created game
    */
-  createGame(name: string, description: string = ''): Observable<Game> {
-    const body = { Name: name, Description: description };
+  createGame(name: string, description: string = '', imageUrl: string = ''): Observable<Game> {
+    const body = { Name: name, Description: description, ImageUrl: imageUrl };
     return this.http.post<Game>(this.baseUrl, body);
   }
 

@@ -24,9 +24,9 @@ namespace Leaderboard.Controllers
 		[Authorize(Roles = "Admin")]
 		public async Task<ActionResult<GameDto>> PostGame(GameDto gameDto)
 		{
-			var game = new Game { Name = gameDto.Name, Description = gameDto.Description };
+			var game = new Game { Name = gameDto.Name, Description = gameDto.Description, ImageUrl = gameDto.ImageUrl };
 			await _gameRepository.AddAsync(game);
-			var resultDto = new GameDto { Id = game.Id, Name = game.Name, Description = game.Description };
+			var resultDto = new GameDto { Id = game.Id, Name = game.Name, Description = game.Description, ImageUrl = game.ImageUrl };
 			return CreatedAtAction("GetGame", new { id = game.Id }, resultDto);
 		}
 
@@ -38,7 +38,7 @@ namespace Leaderboard.Controllers
 			{
 				return NotFound();
 			}
-			return new GameDto { Id = game.Id, Name = game.Name, Description = game.Description };
+			return new GameDto { Id = game.Id, Name = game.Name, Description = game.Description, ImageUrl = game.ImageUrl };
 		}
 
 		[HttpGet]
@@ -52,7 +52,8 @@ namespace Leaderboard.Controllers
 				{
 					Id = ((Game)g).Id,
 					Name = ((Game)g).Name,
-					Description = ((Game)g).Description
+					Description = ((Game)g).Description,
+					ImageUrl = ((Game)g).ImageUrl
 				});
 				return Ok(gameDtos);
 			}
@@ -71,7 +72,8 @@ namespace Leaderboard.Controllers
 			{
 				Id = g.Id,
 				Name = g.Name,
-				Description = g.Description
+				Description = g.Description,
+				ImageUrl = g.ImageUrl
 			});
 
 			return Ok(gameDtos);

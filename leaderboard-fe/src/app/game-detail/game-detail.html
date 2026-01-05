@@ -12,11 +12,16 @@
     </div>
   } @else if (game(); as gameData) {
     <header class="game-header">
-      <p class="eyebrow">Game Details</p>
-      <h1>{{ gameData.name }}</h1>
-      @if (gameData.description) {
-        <p class="description">{{ gameData.description }}</p>
+      @if (gameData.imageUrl) {
+        <img [src]="gameData.imageUrl" [alt]="gameData.name" class="game-banner" />
       }
+      <div class="game-meta">
+        <p class="eyebrow">Game Details</p>
+        <h1>{{ gameData.name }}</h1>
+        @if (gameData.description) {
+          <p class="description">{{ gameData.description }}</p>
+        }
+      </div>
     </header>
 
     <div class="panels-grid">

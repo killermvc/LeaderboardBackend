@@ -43,7 +43,47 @@
 }
 
 .game-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
   margin-bottom: 2rem;
+}
+
+.game-banner {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.game-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-meta h1 {
+  margin: 0 0 0.5rem;
+}
+
+.game-meta .description {
+  margin: 0 0 0.5rem;
+  color: rgba(226, 243, 255, 0.85);
+}
+
+@media (max-width: 700px) {
+  .game-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .game-banner {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    margin-bottom: 1rem;
+  }
 }
 
 .eyebrow {
