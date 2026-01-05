@@ -24,9 +24,9 @@ namespace Leaderboard.Controllers
 		[Authorize(Roles = "Admin")]
 		public async Task<ActionResult<GameDto>> PostGame(GameDto gameDto)
 		{
-			var game = new Game { Name = gameDto.Name };
+			var game = new Game { Name = gameDto.Name, Description = gameDto.Description };
 			await _gameRepository.AddAsync(game);
-			var resultDto = new GameDto { Id = game.Id, Name = game.Name };
+			var resultDto = new GameDto { Id = game.Id, Name = game.Name, Description = game.Description };
 			return CreatedAtAction("GetGame", new { id = game.Id }, resultDto);
 		}
 
@@ -38,7 +38,7 @@ namespace Leaderboard.Controllers
 			{
 				return NotFound();
 			}
-			return new GameDto { Id = game.Id, Name = game.Name };
+			return new GameDto { Id = game.Id, Name = game.Name, Description = game.Description };
 		}
 
 		[HttpGet]
@@ -51,7 +51,8 @@ namespace Leaderboard.Controllers
 				var gameDtos = pagedGames.Select(g => new GameDto
 				{
 					Id = ((Game)g).Id,
-					Name = ((Game)g).Name
+					Name = ((Game)g).Name,
+					Description = ((Game)g).Description
 				});
 				return Ok(gameDtos);
 			}
@@ -69,7 +70,8 @@ namespace Leaderboard.Controllers
 			var gameDtos = games.Select(g => new GameDto
 			{
 				Id = g.Id,
-				Name = g.Name
+				Name = g.Name,
+				Description = g.Description
 			});
 
 			return Ok(gameDtos);

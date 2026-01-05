@@ -14,7 +14,9 @@
     <header class="game-header">
       <p class="eyebrow">Game Details</p>
       <h1>{{ gameData.name }}</h1>
-      <p class="game-id">Game ID: {{ gameData.id }}</p>
+      @if (gameData.description) {
+        <p class="description">{{ gameData.description }}</p>
+      }
     </header>
 
     <div class="panels-grid">

@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 export interface Game {
   id: number;
   name: string;
+  description: string;
 }
 
 @Injectable({
@@ -19,10 +20,11 @@ export class GameService {
   /**
    * Creates a new game (Admin only)
    * @param name The name of the game
+   * @param description The description of the game
    * @returns Observable with the created game
    */
-  createGame(name: string): Observable<Game> {
-    const body = { Name: name };
+  createGame(name: string, description: string = ''): Observable<Game> {
+    const body = { Name: name, Description: description };
     return this.http.post<Game>(this.baseUrl, body);
   }
 
