@@ -5,24 +5,31 @@ using System.Security.Claims;
 using Leaderboard.Repositories;
 using Leaderboard.Models;
 using Leaderboard.Services;
+using Leaderboard.Dtos;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Leaderboard.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IUserRepository userRepository, IJwtService jwtService) : ControllerBase
+public class AuthController(IUserRepository userRepository, IJwtService jwtService, IScoreRepository scoreRepository) : ControllerBase
 {
 	private readonly IUserRepository _userRepository = userRepository;
 	private readonly IJwtService _jwtService = jwtService;
+	private readonly IScoreRepository _scoreRepository = scoreRepository;
 
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] CredentialsRequest request)
 	{
-		if (await _userRepository.GetUserByNameAsync(request.UserName!) != null)
-        {
-            return BadRequest(new { Message = "Username already exists" });
-        }
+		if (string.IsNullOrWhiteSpace(request.UserName))
+		{
+			return BadRequest(new { Message = "Username is required" });
+		}
+
+		if (await _userRepository.GetUserByNameAsync(request.UserName) != null)
+		{
+			return BadRequest(new { Message = "Username already exists" });
+		}
 
 		var user = new User
 		{
@@ -129,6 +136,76 @@ public class AuthController(IUserRepository userRepository, IJwtService jwtServi
 		await _userRepository.UpdateUserAsync(user);
 
 		return Ok(new { Message = "Username updated successfully" });
+	}
+
+	[HttpGet("search")]
+	public async Task<IActionResult> SearchUsers([FromQuery] string q, [FromQuery] int limit = 20)
+	{
+		if (string.IsNullOrWhiteSpace(q))
+			return BadRequest(new { Message = "Search query is required" });
+
+		var users = await _userRepository.SearchUsersAsync(q, limit);
+		var userDtos = new List<UserDto>();
+
+		foreach (var u in users)
+		{
+			var scores = await _scoreRepository.GetScoresByUserAsync(u.Id, 1000, 0);
+			userDtos.Add(new UserDto
+			{
+				Id = u.Id,
+				Username = u.Username,
+				ScoresCount = scores.Count,
+				GamesPlayedCount = scores.Select(s => s.Game.Id).Distinct().Count(),
+				CreatedAt = u.CreatedAt
+			});
+		}
+
+		return Ok(userDtos);
+	}
+
+	[HttpGet("user/{userId}")]
+	public async Task<IActionResult> GetUserProfile([FromRoute] int userId)
+	{
+		User? user = await _userRepository.GetUserByIdAsync(userId);
+		if (user == null)
+			return NotFound(new { Message = "User not found" });
+
+		var scores = await _scoreRepository.GetScoresByUserAsync(userId, 1000, 0);
+		
+		// Get rankings for each game the user has played
+		var gameRankings = new List<object>();
+		var gamesPlayed = scores.Select(s => s.Game).DistinctBy(g => g.Id).ToList();
+		
+		foreach (var game in gamesPlayed)
+		{
+			var rank = await _scoreRepository.GetRankAsync(game.Id, userId);
+			var userBestScore = scores.Where(s => s.Game.Id == game.Id).Max(s => s.Value);
+			gameRankings.Add(new {
+				GameId = game.Id,
+				GameName = game.Name,
+				Rank = rank,
+				BestScore = userBestScore,
+				ScoresSubmitted = scores.Count(s => s.Game.Id == game.Id)
+			});
+		}
+
+		var recentScores = scores.OrderByDescending(s => s.DateAchieved).Take(10).Select(s => new {
+			Id = s.Id,
+			GameId = s.Game.Id,
+			GameName = s.Game.Name,
+			Value = s.Value,
+			DateAchieved = s.DateAchieved
+		}).ToList();
+
+		return Ok(new {
+			Id = user.Id,
+			Username = user.Username,
+			CreatedAt = user.CreatedAt,
+			TotalScoresSubmitted = scores.Count,
+			GamesPlayedCount = gamesPlayed.Count,
+			GameRankings = gameRankings,
+			RecentScores = recentScores
+		});
 	}
 }
 

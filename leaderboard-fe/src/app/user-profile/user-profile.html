@@ -1,0 +1,94 @@
+<div class="user-profile-container">
+  @if (loading()) {
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error">
+      <p>{{ error() }}</p>
+      <button (click)="router.navigate(['/'])">Go Home</button>
+    </div>
+  } @else if (userProfile()) {
+    <!-- Profile Header -->
+    <header class="profile-header">
+      <div class="avatar">
+        <span class="avatar-icon">👤</span>
+      </div>
+      <div class="profile-info">
+        <h1 class="username">{{ userProfile()!.username }}</h1>
+        <p class="joined">Member since {{ formatDate(userProfile()!.createdAt) }}</p>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <section class="stats-overview">
+      <div class="stat-card">
+        <span class="stat-value">{{ userProfile()!.totalScoresSubmitted }}</span>
+        <span class="stat-label">Scores Submitted</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ userProfile()!.gamesPlayedCount }}</span>
+        <span class="stat-label">Games Played</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ getTimeAgo(userProfile()!.createdAt) }}</span>
+        <span class="stat-label">Joined</span>
+      </div>
+    </section>
+
+    <!-- Game Rankings -->
+    @if (userProfile()!.gameRankings.length > 0) {
+      <section class="section">
+        <h2>🏆 Game Rankings</h2>
+        <div class="rankings-grid">
+          @for (ranking of userProfile()!.gameRankings; track ranking.gameId) {
+            <div class="ranking-card" (click)="viewGame(ranking.gameId)">
+              <div class="ranking-header">
+                <span class="game-name">{{ ranking.gameName }}</span>
+                <span class="rank" [class]="getRankClass(ranking.rank)">
+                  {{ getRankDisplay(ranking.rank) }}
+                </span>
+              </div>
+              <div class="ranking-stats">
+                <div class="ranking-stat">
+                  <span class="value">{{ ranking.bestScore | number }}</span>
+                  <span class="label">Best Score</span>
+                </div>
+                <div class="ranking-stat">
+                  <span class="value">{{ ranking.scoresSubmitted }}</span>
+                  <span class="label">Submissions</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Recent Scores -->
+    @if (userProfile()!.recentScores.length > 0) {
+      <section class="section">
+        <h2>📊 Recent Activity</h2>
+        <div class="scores-list">
+          @for (score of userProfile()!.recentScores; track score.id) {
+            <div class="score-item" (click)="viewGame(score.gameId)">
+              <div class="score-game">
+                <span class="game-name">{{ score.gameName }}</span>
+                <span class="score-date">{{ getTimeAgo(score.dateAchieved) }}</span>
+              </div>
+              <div class="score-value">{{ score.value | number }}</div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Empty State -->
+    @if (userProfile()!.gameRankings.length === 0) {
+      <section class="empty-state">
+        <p>This user hasn't submitted any scores yet.</p>
+      </section>
+    }
+  }
+</div>

@@ -7,6 +7,8 @@ import { HomePage } from './home-page/home-page';
 import { Games } from './games/games';
 import { MyGames } from './my-games/my-games';
 import { GameDetail } from './game-detail/game-detail';
+import { SearchResults } from './search-results/search-results';
+import { UserProfileComponent } from './user-profile/user-profile';
 
 export const routes: Routes = [
 	  {
@@ -32,6 +34,14 @@ export const routes: Routes = [
 	  {
 		path: 'mygames',
 		component: MyGames
+	  },
+	  {
+		path: 'search',
+		component: SearchResults
+	  },
+	  {
+		path: 'user/:id',
+		component: UserProfileComponent
 	  },
 	  {
 		path: '',

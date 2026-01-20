@@ -10,4 +10,5 @@ public interface IUserRepository
 	public Task UpdateUserAsync(User user);
 
 	public Task AddRoleToUserAsync(User user, Role role);
+	public Task<List<User>> SearchUsersAsync(string query, int limit);
 }

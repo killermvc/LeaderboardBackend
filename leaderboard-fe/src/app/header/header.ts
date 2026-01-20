@@ -27,9 +27,9 @@ export class Header {
 
 	onSearch(query: string) {
 		if (query.trim()) {
-			this.router.navigate(['/games'], { queryParams: { q: query } });
+			this.router.navigate(['/search'], { queryParams: { q: query } });
 		} else {
-			this.router.navigate(['/games']);
+			this.router.navigate(['/search']);
 		}
 	}
 

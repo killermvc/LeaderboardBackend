@@ -61,4 +61,13 @@ public class UserRepository(AppDbContext context) : IUserRepository
 		await _context.UserRoles.AddAsync(userRole);
 		await _context.SaveChangesAsync();
 	}
+
+	public async Task<List<User>> SearchUsersAsync(string query, int limit)
+	{
+		return await _context.Users
+			.AsNoTracking()
+			.Where(u => EF.Functions.Like(u.Username, $"%{query}%"))
+			.Take(limit)
+			.ToListAsync();
+	}
 }
