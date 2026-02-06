@@ -57,7 +57,7 @@ export class SearchResults implements OnInit {
 
   performSearch(query: string) {
     this.loading.set(true);
-    
+
     // Search both games and users in parallel
     this.gameService.getAllGames(100, 0).subscribe({
       next: (data) => {
@@ -104,7 +104,7 @@ export class SearchResults implements OnInit {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 1) return 'today';
     if (diffDays === 1) return 'yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;

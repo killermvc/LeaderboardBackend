@@ -86,7 +86,7 @@ export class GameDetail implements OnInit {
     if (!this.isLoggedIn()) {
       return;
     }
-    
+
     this.moderationService.canModerate(gameId).subscribe({
       next: (result) => {
         this.canModerate.set(result.canModerate);

@@ -33,7 +33,7 @@ export class PendingScoresComponent implements OnInit {
   rejectionReason = signal('');
 
   isAuthenticated = computed(() => this.authService.isAuthenticated());
-  isModerator = computed(() => 
+  isModerator = computed(() =>
     this.authService.hasRole('Moderator') || this.authService.hasRole('Admin')
   );
 

@@ -37,8 +37,8 @@
           @for (user of searchResults(); track user.id) {
             <li>
               <span class="user-name">{{ user.username }}</span>
-              <button 
-                class="btn-add" 
+              <button
+                class="btn-add"
                 (click)="addModerator(user.id)"
                 [disabled]="addingUserId() === user.id"
               >
@@ -57,7 +57,7 @@
     <!-- Current Moderators -->
     <section class="moderators-section">
       <h2>Current Moderators</h2>
-      
+
       @if (loading()) {
         <p class="loading-text">Loading moderators...</p>
       } @else if (moderators().length === 0) {
@@ -77,8 +77,8 @@
                 }
                 <span class="assigned-date">Added {{ formatDate(mod.assignedAt) }}</span>
               </div>
-              <button 
-                class="btn-remove" 
+              <button
+                class="btn-remove"
                 (click)="removeModerator(mod.userId)"
                 [disabled]="removingUserId() === mod.userId"
                 aria-label="Remove moderator"
