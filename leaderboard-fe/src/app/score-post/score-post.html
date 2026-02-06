@@ -1,0 +1,119 @@
+<div class="score-post-shell">
+  <button class="back-btn" (click)="goBack()">← Back</button>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading score post...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" routerLink="/">Go Home</button>
+    </div>
+  } @else if (score(); as s) {
+    <article class="post-card">
+      <!-- Status Banner -->
+      <div class="status-banner" [class]="getStatusClass(s.status)">
+        <span class="status-icon">{{ getStatusIcon(s.status) }}</span>
+        <span class="status-label">{{ getStatusLabel(s.status) }}</span>
+      </div>
+
+      <!-- Post Header -->
+      <header class="post-header">
+        <h1 class="post-title">{{ s.title }}</h1>
+        <div class="post-meta">
+          <span class="meta-item">
+            by
+            <button class="link-btn" (click)="goToUser()">{{ s.user.username ?? 'Unknown' }}</button>
+          </span>
+          <span class="meta-separator">·</span>
+          <span class="meta-item">
+            <button class="link-btn" (click)="goToGame()">{{ s.game.name }}</button>
+          </span>
+          <span class="meta-separator">·</span>
+          <span class="meta-item date">{{ formatDate(s.dateAchieved) }}</span>
+        </div>
+      </header>
+
+      <!-- Score Value -->
+      <div class="score-highlight">
+        <span class="score-label">Score</span>
+        <span class="score-value">{{ s.value | number }}</span>
+      </div>
+
+      <!-- Description -->
+      @if (s.description) {
+        <div class="post-description">
+          <p>{{ s.description }}</p>
+        </div>
+      }
+
+      <!-- Review Info -->
+      @if (s.status === ScoreStatus.Approved && s.reviewedBy) {
+        <div class="review-info approved">
+          <p>
+            ✅ Approved by <strong>{{ s.reviewedBy.username }}</strong>
+            @if (s.reviewedAt) {
+              on {{ formatDate(s.reviewedAt) }}
+            }
+          </p>
+        </div>
+      } @else if (s.status === ScoreStatus.Rejected) {
+        <div class="review-info rejected">
+          @if (s.reviewedBy) {
+            <p>
+              ❌ Rejected by <strong>{{ s.reviewedBy.username }}</strong>
+              @if (s.reviewedAt) {
+                on {{ formatDate(s.reviewedAt) }}
+              }
+            </p>
+          }
+          @if (s.rejectionReason) {
+            <p class="rejection-reason">Reason: {{ s.rejectionReason }}</p>
+          }
+        </div>
+      }
+
+      <!-- Moderation Actions -->
+      @if (isPending() && canModerate() && !isOwnScore()) {
+        <div class="moderation-actions">
+          <h3>Moderation</h3>
+          @if (processing()) {
+            <p class="processing-text">Processing...</p>
+          } @else {
+            <div class="action-buttons">
+              <button class="btn-approve" (click)="approveScore()">✅ Approve</button>
+              <button class="btn-reject" (click)="openRejectModal()">❌ Reject</button>
+            </div>
+          }
+        </div>
+      }
+    </article>
+  }
+
+  <!-- Rejection Modal -->
+  @if (showRejectModal()) {
+    <div class="modal-overlay" (click)="closeRejectModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>Reject Score</h2>
+        <p>Are you sure you want to reject this score?</p>
+
+        <div class="form-group">
+          <label for="rejectionReason">Reason (optional):</label>
+          <textarea
+            id="rejectionReason"
+            [ngModel]="rejectionReason()"
+            (ngModelChange)="rejectionReason.set($event)"
+            placeholder="Provide a reason for rejection..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeRejectModal()">Cancel</button>
+          <button class="btn-reject" (click)="confirmReject()">Reject Score</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

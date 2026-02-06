@@ -12,6 +12,7 @@ import { UserProfileComponent } from './user-profile/user-profile';
 import { PendingScoresComponent } from './pending-scores/pending-scores';
 import { MySubmissionsComponent } from './my-submissions/my-submissions';
 import { GameModeratorsComponent } from './game-moderators/game-moderators';
+import { ScorePostComponent } from './score-post/score-post';
 
 export const routes: Routes = [
 	  {
@@ -25,6 +26,10 @@ export const routes: Routes = [
 	  {
 		path: 'auth/account',
 		component: AccountSettings
+	  },
+	  {
+		path: 'scores/:id',
+		component: ScorePostComponent
 	  },
 	  {
 		path: 'games',

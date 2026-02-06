@@ -44,6 +44,8 @@ export interface ScoreRecord {
   game: ScoreGame;
   value: number;
   dateAchieved: string;
+  title: string;
+  description?: string | null;
   status: ScoreStatus;
   reviewedBy?: ScoreUser | null;
   reviewedAt?: string | null;
@@ -59,12 +61,40 @@ export class ScoreService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  submitScore(gameId: number, score: number): Observable<string> {
-    const payload = { gameId, score };
+  submitScore(gameId: number, score: number, title?: string, description?: string): Observable<string> {
+    const payload: Record<string, unknown> = { gameId, score };
+    if (title) payload['title'] = title;
+    if (description) payload['description'] = description;
     return this.http.post<string>(`${this.baseUrl}/submit`, payload, {
       ...this.getAuthOptions(),
       responseType: 'text' as 'json',
     });
+  }
+
+  /**
+   * Get all score submissions (posts) visible to everyone
+   */
+  getAllSubmissions(limit = 20, offset = 0): Observable<ScoreRecord[]> {
+    const params = this.buildPaginationParams(limit, offset);
+    return this.http.get<ScoreRecord[]>(`${this.baseUrl}/scores/submissions`, { params });
+  }
+
+  /**
+   * Get a single score post by ID (publicly accessible)
+   */
+  getScoreById(scoreId: number): Observable<ScoreRecord> {
+    return this.http.get<ScoreRecord>(`${this.baseUrl}/scores/${scoreId}`);
+  }
+
+  /**
+   * Look up the top approved score for a user in a game.
+   * Returns the scoreId so the client can navigate to the score post.
+   */
+  lookupScore(gameId: number, userId: number): Observable<{ scoreId: number }> {
+    const params = new HttpParams()
+      .set('gameId', gameId.toString())
+      .set('userId', userId.toString());
+    return this.http.get<{ scoreId: number }>(`${this.baseUrl}/scores/lookup`, { params });
   }
 
   getLeaderboard(gameId: number, limit = 10): Observable<LeaderboardEntry[]> {

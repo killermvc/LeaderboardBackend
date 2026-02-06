@@ -37,7 +37,9 @@ export class GameDetail implements OnInit {
   isAdmin = computed(() => this.authService.hasRole('Admin'));
 
   scoreForm = this.fb.group({
-    score: [0, [Validators.required, Validators.min(0)]]
+    score: [0, [Validators.required, Validators.min(0)]],
+    title: [''],
+    description: ['']
   });
 
   ngOnInit() {
@@ -104,16 +106,19 @@ export class GameDetail implements OnInit {
 
     const scoreValue = this.scoreForm.value.score ?? 0;
     const gameId = this.game()!.id;
+    const gameName = this.game()!.name;
+    const title = this.scoreForm.value.title?.trim() || `${gameName} - ${scoreValue}`;
+    const description = this.scoreForm.value.description?.trim() || undefined;
 
     this.submitting.set(true);
     this.submitSuccess.set(null);
     this.submitError.set(null);
 
-    this.scoreService.submitScore(gameId, scoreValue).subscribe({
+    this.scoreService.submitScore(gameId, scoreValue, title, description).subscribe({
       next: () => {
         this.submitSuccess.set('Score submitted successfully! It will appear on the leaderboard once approved by a moderator.');
         this.submitting.set(false);
-        this.scoreForm.reset({ score: 0 });
+        this.scoreForm.reset({ score: 0, title: '', description: '' });
         // Note: We don't refresh the leaderboard immediately since the score is pending
       },
       error: (err) => {
@@ -151,5 +156,19 @@ export class GameDetail implements OnInit {
     if (gameId) {
       this.router.navigate(['/games', gameId, 'pending-scores']);
     }
+  }
+
+  viewScorePost(userId: number) {
+    const gameId = this.game()?.id;
+    if (!gameId) return;
+
+    this.scoreService.lookupScore(gameId, userId).subscribe({
+      next: (result) => {
+        this.router.navigate(['/scores', result.scoreId]);
+      },
+      error: (err) => {
+        console.error('Could not find score post', err);
+      }
+    });
   }
 }

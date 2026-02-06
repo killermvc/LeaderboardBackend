@@ -29,6 +29,7 @@
       <table class="scores-table">
         <thead>
           <tr>
+            <th>Post</th>
             <th>Player</th>
             <th>Score</th>
             <th>Submitted</th>
@@ -38,6 +39,12 @@
         <tbody>
           @for (score of pendingScores(); track score.id) {
             <tr [class.processing]="processingScoreId() === score.id">
+              <td class="post-info">
+                <button class="link-btn post-title" (click)="viewScorePost(score.id)">{{ score.title }}</button>
+                @if (score.description) {
+                  <span class="post-description">{{ score.description }}</span>
+                }
+              </td>
               <td>
                 <button class="link-btn" (click)="viewUser(score.user.id)">
                   {{ score.user.username }}

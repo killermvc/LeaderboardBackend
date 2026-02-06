@@ -194,6 +194,26 @@
   font-style: italic;
 }
 
+.post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.post-title {
+  font-weight: 600;
+  color: rgba(226, 243, 255, 0.95);
+}
+
+.post-description {
+  font-size: 0.85rem;
+  color: rgba(226, 243, 255, 0.6);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // Modal styles
 .modal-overlay {
   position: fixed;

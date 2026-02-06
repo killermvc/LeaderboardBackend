@@ -168,6 +168,41 @@
   gap: 0.25rem;
 }
 
+.post-title {
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: rgba(226, 243, 255, 0.95);
+}
+
+.post-title-link {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: #8dd8c3;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+    color: #bff1df;
+  }
+}
+
+.submission-description {
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+
+  p {
+    margin: 0;
+    color: rgba(226, 243, 255, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
 .game-link {
   background: none;
   border: none;

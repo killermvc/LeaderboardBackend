@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ScoreService, ScoreRecord } from '../core/score-service';
 import { AuthService } from '../core/auth-service';
 
@@ -19,11 +20,15 @@ export class HomePage implements OnInit {
   recentError = '';
   myError = '';
 
-  constructor(private scoreService: ScoreService, public authService: AuthService) {}
+  constructor(private scoreService: ScoreService, public authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchRecentScores();
     this.fetchMyScores();
+  }
+
+  viewScorePost(scoreId: number): void {
+    this.router.navigate(['/scores', scoreId]);
   }
 
   private fetchRecentScores(): void {

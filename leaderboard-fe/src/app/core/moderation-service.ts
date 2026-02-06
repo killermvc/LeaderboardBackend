@@ -41,6 +41,8 @@ export interface PendingScore {
   };
   value: number;
   dateAchieved: string;
+  title: string;
+  description?: string | null;
   status: number; // 0 = Pending, 1 = Approved, 2 = Rejected
   reviewedBy?: {
     id: number;

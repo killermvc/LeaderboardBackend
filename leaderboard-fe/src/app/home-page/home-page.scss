@@ -92,14 +92,31 @@
 	background: rgba(255, 255, 255, 0.02);
 	border-radius: 14px;
 	border: 1px solid rgba(255, 255, 255, 0.04);
+	transition: background 0.2s ease;
+
+	&.clickable {
+		cursor: pointer;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.06);
+		}
+	}
 }
 
 .player-block p {
 	margin: 0;
 }
 
-.player-name {
+.post-title {
 	font-weight: 600;
+	font-size: 1rem;
+	color: #e2f3ff;
+}
+
+.player-name {
+	font-weight: 500;
+	font-size: 0.9rem;
+	color: #93a8bb;
 }
 
 .game-name {

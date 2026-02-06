@@ -109,6 +109,10 @@ export class MySubmissionsComponent implements OnInit {
     this.router.navigate(['/games', gameId]);
   }
 
+  viewScorePost(scoreId: number) {
+    this.router.navigate(['/scores', scoreId]);
+  }
+
   goToLogin() {
     this.router.navigate(['/auth/login']);
   }

@@ -50,7 +50,7 @@
         } @else {
           <ol class="leaderboard-list">
             @for (entry of leaderboard(); track entry.userId; let i = $index) {
-              <li [class.top-three]="i < 3">
+              <li [class.top-three]="i < 3" class="clickable" (click)="viewScorePost(entry.userId)">
                 <span class="rank">
                   @switch (i) {
                     @case (0) { 🥇 }
@@ -84,6 +84,27 @@
                 min="0"
                 placeholder="Enter your score"
               />
+            </div>
+
+            <div class="form-group">
+              <label for="title">Post Title</label>
+              <input
+                type="text"
+                id="title"
+                formControlName="title"
+                [placeholder]="'e.g. ' + (game()?.name ?? 'Game') + ' - ' + (scoreForm.value.score ?? 0)"
+              />
+              <span class="hint">Leave blank for default: "Game Name - Score"</span>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description <span class="optional">(optional)</span></label>
+              <textarea
+                id="description"
+                formControlName="description"
+                placeholder="Tell everyone about your achievement..."
+                rows="3"
+              ></textarea>
             </div>
 
             @if (submitSuccess()) {

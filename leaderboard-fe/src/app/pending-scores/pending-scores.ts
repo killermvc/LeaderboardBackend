@@ -169,4 +169,8 @@ export class PendingScoresComponent implements OnInit {
   viewUser(userId: number) {
     this.router.navigate(['/user', userId]);
   }
+
+  viewScorePost(scoreId: number) {
+    this.router.navigate(['/scores', scoreId]);
+  }
 }

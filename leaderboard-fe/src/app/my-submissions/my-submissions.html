@@ -51,6 +51,7 @@
         <div class="submission-card" [class]="getStatusClass(score.status)">
           <div class="submission-main">
             <div class="game-info">
+              <button class="post-title-link" (click)="viewScorePost(score.id)">{{ score.title }}</button>
               <button class="game-link" (click)="viewGame(score.game.id)">
                 {{ score.game.name }}
               </button>
@@ -58,6 +59,12 @@
             </div>
             <div class="score-value">{{ score.value | number }}</div>
           </div>
+
+          @if (score.description) {
+            <div class="submission-description">
+              <p>{{ score.description }}</p>
+            </div>
+          }
 
           <div class="submission-status">
             <span class="status-badge" [class]="getStatusClass(score.status)">
