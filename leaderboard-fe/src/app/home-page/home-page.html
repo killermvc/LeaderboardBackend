@@ -33,7 +33,7 @@
 								</div>
 								<div class="score-meta">
 									<span class="score-value">{{ score.value | number }}</span>
-									<span class="score-date">{{ score.dateAchieved | date:'MMM d, HH:mm' }}</span>
+									<span class="score-date">{{ score.dateAchieved | date:'d/MM/yy, HH:mm' }}</span>
 								</div>
 							</li>
 						}
@@ -65,10 +65,11 @@
 					@if (myScores.length) {
 						<ul class="score-list">
 							@for (score of myScores; track score) {
-								<li>
+								<li class="clickable" (click)="viewScorePost(score.id)">
 									<div class="player-block">
-										<p class="player-name">{{ score.game.name }}</p>
-										<p class="game-name">Recorded on {{ score.dateAchieved | date:'MMM d, HH:mm' }}</p>
+										<p class="post-title">{{ score.title || (score.game.name + ' - ' + score.value) }}</p>
+										<p class="player-name">Game: {{ score.game.name }}</p>
+										<p class="game-name">Recorded on {{ score.dateAchieved | date:'d/MM/yyyy \'at\' HH:mm' }}</p>
 									</div>
 									<div class="score-meta">
 										<span class="score-value">{{ score.value | number }}</span>
