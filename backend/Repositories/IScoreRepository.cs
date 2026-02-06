@@ -4,13 +4,24 @@ namespace Leaderboard.Repositories;
 
 public interface IScoreRepository
 {
-	public Task SubmitScoreAsync(int userId, int gameId, int score);
+	public Task SubmitScoreAsync(int userId, int gameId, int score, string? title = null, string? description = null);
 	public Task<Score?> GetByIdAsync(int id);
 	public Task<List<LeaderboardEntry>> GetLeaderboardAsync(int game, int limit);
 	public Task<long?> GetRankAsync(int game, int user);
 	public Task<List<LeaderboardEntry>> GetTopPlayersAsync(DateTime start_date, DateTime end_date, int limit);
 	public Task<List<Score>> GetScoresByUserAsync(int userId, int limit, int offset);
 	public Task<List<Score>> GetRecentScoresAsync(int limit, int offset);
+
+	/// <summary>
+	/// Gets the top approved score for a user in a specific game.
+	/// Used to look up the score post from a leaderboard entry.
+	/// </summary>
+	public Task<Score?> GetTopScoreByUserAndGameAsync(int gameId, int userId);
+
+	/// <summary>
+	/// Gets all score submissions (posts) visible to everyone, regardless of status.
+	/// </summary>
+	public Task<List<Score>> GetAllSubmissionsAsync(int limit, int offset);
 
 	/// <summary>
 	/// Gets all scores by a user, including pending and rejected ones.

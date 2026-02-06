@@ -9,6 +9,17 @@ public class Score
 	public DateTime DateAchieved { get; set; }
 
 	/// <summary>
+	/// The title of the score submission post.
+	/// Defaults to "GameName - ScoreValue".
+	/// </summary>
+	public string Title { get; set; } = string.Empty;
+
+	/// <summary>
+	/// Optional description provided by the user for this score submission.
+	/// </summary>
+	public string? Description { get; set; }
+
+	/// <summary>
 	/// The approval status of this score. Defaults to Pending.
 	/// Only approved scores are shown on the leaderboard.
 	/// </summary>

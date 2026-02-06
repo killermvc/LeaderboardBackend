@@ -378,6 +378,8 @@ public class ModerationController(
         Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
         Value = s.Value,
         DateAchieved = s.DateAchieved,
+        Title = s.Title,
+        Description = s.Description,
         Status = s.Status,
         ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
         ReviewedAt = s.ReviewedAt,

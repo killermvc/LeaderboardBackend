@@ -45,7 +45,7 @@ public class ScoreController(
         try
         {
             // Submit the score through the repository
-            await _scoreRepository.SubmitScoreAsync(userId, request.GameId, request.Score);
+            await _scoreRepository.SubmitScoreAsync(userId, request.GameId, request.Score, request.Title, request.Description);
             return Ok("Score submitted successfully.");
         }
         catch (KeyNotFoundException ex)
@@ -154,7 +154,9 @@ public class ScoreController(
 				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
 				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
 				Value = s.Value,
-				DateAchieved = s.DateAchieved
+				DateAchieved = s.DateAchieved,
+				Title = s.Title,
+				Description = s.Description
 			}).ToList();
 
 			return Ok(dtos);
@@ -180,6 +182,8 @@ public class ScoreController(
 				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
 				Value = s.Value,
 				DateAchieved = s.DateAchieved,
+				Title = s.Title,
+				Description = s.Description,
 				Status = s.Status,
 				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
 				ReviewedAt = s.ReviewedAt,
@@ -192,6 +196,104 @@ public class ScoreController(
 		{
 			_logger.LogError(ex, "Error retrieving recent scores.");
 			return StatusCode(500, "An error occurred while retrieving the recent scores.");
+		}
+	}
+
+	/// <summary>
+	/// Gets a single score submission (post) by its ID. Publicly accessible.
+	/// </summary>
+	[HttpGet]
+	[Route("scores/{scoreId}")]
+	public async Task<IActionResult> GetScoreById(int scoreId)
+	{
+		try
+		{
+			var s = await _scoreRepository.GetByIdAsync(scoreId);
+			if (s == null)
+			{
+				return NotFound("Score not found.");
+			}
+
+			var dto = new ScoreDto
+			{
+				Id = s.Id,
+				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
+				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
+				Value = s.Value,
+				DateAchieved = s.DateAchieved,
+				Title = s.Title,
+				Description = s.Description,
+				Status = s.Status,
+				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
+				ReviewedAt = s.ReviewedAt,
+				RejectionReason = s.RejectionReason
+			};
+
+			return Ok(dto);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving score.");
+			return StatusCode(500, "An error occurred while retrieving the score.");
+		}
+	}
+
+	/// <summary>
+	/// Looks up the top approved score for a user in a specific game.
+	/// Returns the score ID so the client can navigate to the score post.
+	/// </summary>
+	[HttpGet]
+	[Route("scores/lookup")]
+	public async Task<IActionResult> LookupScore([FromQuery] int gameId, [FromQuery] int userId)
+	{
+		try
+		{
+			var score = await _scoreRepository.GetTopScoreByUserAndGameAsync(gameId, userId);
+			if (score == null)
+			{
+				return NotFound("No approved score found for this user in this game.");
+			}
+
+			return Ok(new { scoreId = score.Id });
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error looking up score.");
+			return StatusCode(500, "An error occurred while looking up the score.");
+		}
+	}
+
+	/// <summary>
+	/// Gets all score submissions (posts) visible to everyone, regardless of status.
+	/// </summary>
+	[HttpGet]
+	[Route("scores/submissions")]
+	public async Task<IActionResult> GetAllSubmissions([FromQuery] int limit = 20, [FromQuery] int offset = 0)
+	{
+		try
+		{
+			var scores = await _scoreRepository.GetAllSubmissionsAsync(limit, offset);
+			var dtos = scores.Select(s => new ScoreDto
+			{
+				Id = s.Id,
+				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
+				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
+				Value = s.Value,
+				DateAchieved = s.DateAchieved,
+				Title = s.Title,
+				Description = s.Description,
+				Status = s.Status,
+				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
+				ReviewedAt = s.ReviewedAt,
+				RejectionReason = s.RejectionReason
+			}).ToList();
+
+			return Ok(dtos);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving submissions.");
+			return StatusCode(500, "An error occurred while retrieving submissions.");
 		}
 	}
 
@@ -219,6 +321,8 @@ public class ScoreController(
 				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
 				Value = s.Value,
 				DateAchieved = s.DateAchieved,
+				Title = s.Title,
+				Description = s.Description,
 				Status = s.Status,
 				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
 				ReviewedAt = s.ReviewedAt,
@@ -240,4 +344,6 @@ public class ScoreRequest
 {
     public required int GameId { get; set; }
     public int Score { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
 }

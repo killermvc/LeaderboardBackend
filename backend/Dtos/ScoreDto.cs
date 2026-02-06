@@ -10,6 +10,8 @@ public class ScoreDto
     public GameDto? Game { get; set; }
     public int Value { get; set; }
     public DateTime DateAchieved { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public ScoreStatus Status { get; set; }
     public UserDto? ReviewedBy { get; set; }
     public DateTime? ReviewedAt { get; set; }

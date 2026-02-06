@@ -22,7 +22,7 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 	/// <param name="scoreValue">The score value to be submitted.</param>
 	/// <exception cref="KeyNotFoundException">Thrown when the specified game or user ID is not found.</exception>
 	/// <exception cref="InvalidOperationException">Thrown when the new score is not higher than the existing highest approved score.</exception>
-	public async Task SubmitScoreAsync(int userId, int gameId, int scoreValue)
+	public async Task SubmitScoreAsync(int userId, int gameId, int scoreValue, string? title = null, string? description = null)
 	{
 		Game game = await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId)
 			?? throw new KeyNotFoundException($"Game with ID {gameId} not found.");
@@ -44,6 +44,8 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 			Value = scoreValue,
 			User = user,
 			Game = game,
+			Title = title ?? $"{game.Name} - {scoreValue}",
+			Description = description,
 			Status = ScoreStatus.Pending // Score starts as pending
 		};
 
@@ -243,6 +245,36 @@ public class ScoreRepository(AppDbContext context, ConnectionMultiplexer multipl
 			.Include(s => s.User)
 			.Include(s => s.Game)
 			.Where(s => s.Status == ScoreStatus.Approved)
+			.OrderByDescending(s => s.DateAchieved)
+			.Skip(offset)
+			.Take(limit)
+			.ToListAsync();
+	}
+
+	/// <summary>
+	/// Gets the top approved score for a user in a specific game.
+	/// </summary>
+	public async Task<Score?> GetTopScoreByUserAndGameAsync(int gameId, int userId)
+	{
+		return await _context.Scores
+			.AsNoTracking()
+			.Include(s => s.User)
+			.Include(s => s.Game)
+			.Where(s => s.Game.Id == gameId && s.User.Id == userId && s.Status == ScoreStatus.Approved)
+			.OrderByDescending(s => s.Value)
+			.FirstOrDefaultAsync();
+	}
+
+	/// <summary>
+	/// Gets all score submissions (posts) visible to everyone, regardless of status.
+	/// </summary>
+	public Task<List<Score>> GetAllSubmissionsAsync(int limit, int offset)
+	{
+		return _context.Scores
+			.AsNoTracking()
+			.Include(s => s.User)
+			.Include(s => s.Game)
+			.Include(s => s.ReviewedBy)
 			.OrderByDescending(s => s.DateAchieved)
 			.Skip(offset)
 			.Take(limit)
