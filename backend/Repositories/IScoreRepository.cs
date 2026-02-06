@@ -11,4 +11,36 @@ public interface IScoreRepository
 	public Task<List<LeaderboardEntry>> GetTopPlayersAsync(DateTime start_date, DateTime end_date, int limit);
 	public Task<List<Score>> GetScoresByUserAsync(int userId, int limit, int offset);
 	public Task<List<Score>> GetRecentScoresAsync(int limit, int offset);
+
+	/// <summary>
+	/// Gets all scores by a user, including pending and rejected ones.
+	/// For the user to see their own submissions.
+	/// </summary>
+	public Task<List<Score>> GetAllScoresByUserAsync(int userId, int limit, int offset);
+
+	// Score approval methods
+	/// <summary>
+	/// Approves a pending score. Only approved scores appear on leaderboards.
+	/// </summary>
+	public Task ApproveScoreAsync(int scoreId, int moderatorId);
+
+	/// <summary>
+	/// Rejects a pending score with an optional reason.
+	/// </summary>
+	public Task RejectScoreAsync(int scoreId, int moderatorId, string? reason = null);
+
+	/// <summary>
+	/// Gets all pending scores for a specific game.
+	/// </summary>
+	public Task<List<Score>> GetPendingScoresForGameAsync(int gameId, int limit, int offset);
+
+	/// <summary>
+	/// Gets all pending scores across all games (for global moderators).
+	/// </summary>
+	public Task<List<Score>> GetAllPendingScoresAsync(int limit, int offset);
+
+	/// <summary>
+	/// Gets pending scores for games that have no specific moderators.
+	/// </summary>
+	public Task<List<Score>> GetPendingScoresForUnmoderatedGamesAsync(int limit, int offset);
 }

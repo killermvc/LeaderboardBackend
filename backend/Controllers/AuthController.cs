@@ -50,6 +50,13 @@ public class AuthController(IUserRepository userRepository, IJwtService jwtServi
 			return Unauthorized(new {Message = "Invalid username or password"});
 		}
 
+		// Debug: Log roles being added to token
+		Console.WriteLine($"User {user.Username} has {user.UserRoles.Count} roles:");
+		foreach (var ur in user.UserRoles)
+		{
+			Console.WriteLine($"  - Role: {ur.Role?.Name ?? "(null)"}");
+		}
+
 		string token = _jwtService.GenerateToken(user);
 
 		return Ok(new {Token = token, Message = "Login successful"});
@@ -171,11 +178,11 @@ public class AuthController(IUserRepository userRepository, IJwtService jwtServi
 			return NotFound(new { Message = "User not found" });
 
 		var scores = await _scoreRepository.GetScoresByUserAsync(userId, 1000, 0);
-		
+
 		// Get rankings for each game the user has played
 		var gameRankings = new List<object>();
 		var gamesPlayed = scores.Select(s => s.Game).DistinctBy(g => g.Id).ToList();
-		
+
 		foreach (var game in gamesPlayed)
 		{
 			var rank = await _scoreRepository.GetRankAsync(game.Id, userId);

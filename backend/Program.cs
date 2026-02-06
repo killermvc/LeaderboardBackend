@@ -26,6 +26,7 @@ builder.Services.AddSingleton(provider => redis);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+builder.Services.AddScoped<IGameModeratorRepository, GameModeratorRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddLogging(loggingBuilder =>

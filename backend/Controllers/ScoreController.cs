@@ -179,7 +179,11 @@ public class ScoreController(
 				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
 				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
 				Value = s.Value,
-				DateAchieved = s.DateAchieved
+				DateAchieved = s.DateAchieved,
+				Status = s.Status,
+				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
+				ReviewedAt = s.ReviewedAt,
+				RejectionReason = s.RejectionReason
 			}).ToList();
 
 			return Ok(dtos);
@@ -188,6 +192,45 @@ public class ScoreController(
 		{
 			_logger.LogError(ex, "Error retrieving recent scores.");
 			return StatusCode(500, "An error occurred while retrieving the recent scores.");
+		}
+	}
+
+	/// <summary>
+	/// Gets the current user's own score submissions, including pending ones.
+	/// </summary>
+	[HttpGet]
+	[Route("scores/my-submissions")]
+	[Authorize]
+	public async Task<IActionResult> GetMySubmissions([FromQuery] int limit = 20, [FromQuery] int offset = 0)
+	{
+		var userIdClaim = User.Identity?.Name;
+		if (!int.TryParse(userIdClaim, out int userId))
+		{
+			return Unauthorized("Invalid user token.");
+		}
+
+		try
+		{
+			var scores = await _scoreRepository.GetAllScoresByUserAsync(userId, limit, offset);
+			var dtos = scores.Select(s => new ScoreDto
+			{
+				Id = s.Id,
+				User = s.User == null ? null : new UserDto { Id = s.User.Id, Username = s.User?.Username ?? string.Empty },
+				Game = s.Game == null ? null : new GameDto { Id = s.Game.Id, Name = s.Game.Name },
+				Value = s.Value,
+				DateAchieved = s.DateAchieved,
+				Status = s.Status,
+				ReviewedBy = s.ReviewedBy == null ? null : new UserDto { Id = s.ReviewedBy.Id, Username = s.ReviewedBy.Username },
+				ReviewedAt = s.ReviewedAt,
+				RejectionReason = s.RejectionReason
+			}).ToList();
+
+			return Ok(dtos);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error retrieving user submissions.");
+			return StatusCode(500, "An error occurred while retrieving submissions.");
 		}
 	}
 }
