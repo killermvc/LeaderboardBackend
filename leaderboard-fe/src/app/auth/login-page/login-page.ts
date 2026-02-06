@@ -19,7 +19,10 @@ export class LoginPage {
 
 		this.authService.login(userName, password).subscribe(success => {
 			if (success) {
-				this.router.navigate(['/']);
+				// Fetch the current user to update the username in the service
+				this.authService.getCurrentUser().subscribe(() => {
+					this.router.navigate(['/']);
+				});
 			} else {
 				alert('Login failed. Please check your credentials and try again.');
 			}

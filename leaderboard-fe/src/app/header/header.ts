@@ -3,6 +3,7 @@ import { AuthService } from '../core/auth-service';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { octSearch, octFeedPerson, octPlus} from '@ng-icons/octicons';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-header',
@@ -15,13 +16,11 @@ export class Header {
 	public authService = inject(AuthService);
 	private router = inject(Router);
 
-	username = signal<string | null>(null);
+	username = toSignal(this.authService.username$);
 
 	constructor() {
 		if (this.authService.isAuthenticated()) {
-			this.authService.getCurrentUser().subscribe((u) => {
-				if (u) this.username.set(u.username);
-			});
+			this.authService.getCurrentUser().subscribe();
 		}
 	}
 
