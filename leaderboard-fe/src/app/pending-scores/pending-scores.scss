@@ -94,6 +94,17 @@
   }
 }
 
+.self-score-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(226, 243, 255, 0.1);
+  color: rgba(226, 243, 255, 0.6);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-style: italic;
+  border: 1px dashed rgba(226, 243, 255, 0.2);
+}
+
 .score-value {
   font-weight: 600;
   font-family: monospace;

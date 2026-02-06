@@ -36,6 +36,10 @@ export class PendingScoresComponent implements OnInit {
   isModerator = computed(() =>
     this.authService.hasRole('Moderator') || this.authService.hasRole('Admin')
   );
+  currentUserId = computed(() => {
+    const id = this.authService.getUserIdFromToken();
+    return id ? Number(id) : null;
+  });
 
   ngOnInit() {
     if (!this.isAuthenticated()) {

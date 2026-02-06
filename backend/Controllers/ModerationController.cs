@@ -53,6 +53,12 @@ public class ModerationController(
                 return Forbid("You are not authorized to moderate scores for this game.");
             }
 
+            // Prevent moderators from approving their own scores
+            if (score.User.Id == userId)
+            {
+                return BadRequest("You cannot approve your own score.");
+            }
+
             await _scoreRepository.ApproveScoreAsync(scoreId, userId);
             return Ok(new { Message = "Score approved successfully." });
         }
@@ -98,6 +104,12 @@ public class ModerationController(
             if (!await _gameModeratorRepository.CanModerateGameAsync(score.Game.Id, userId))
             {
                 return Forbid("You are not authorized to moderate scores for this game.");
+            }
+
+            // Prevent moderators from rejecting their own scores
+            if (score.User.Id == userId)
+            {
+                return BadRequest("You cannot reject your own score.");
             }
 
             await _scoreRepository.RejectScoreAsync(scoreId, userId, request?.Reason);

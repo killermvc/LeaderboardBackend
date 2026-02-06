@@ -48,6 +48,8 @@
               <td class="actions">
                 @if (processingScoreId() === score.id) {
                   <span class="processing-indicator">Processing...</span>
+                } @else if (score.user.id === currentUserId()) {
+                  <span class="self-score-badge">Self Score</span>
                 } @else {
                   <button class="btn-approve" (click)="approveScore(score.id)" title="Approve">
                     ✅ Approve
