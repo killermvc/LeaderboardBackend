@@ -32,12 +32,22 @@ export interface ScoreGame {
   name: string;
 }
 
+export enum ScoreStatus {
+  Pending = 0,
+  Approved = 1,
+  Rejected = 2
+}
+
 export interface ScoreRecord {
   id: number;
   user: ScoreUser;
   game: ScoreGame;
   value: number;
   dateAchieved: string;
+  status: ScoreStatus;
+  reviewedBy?: ScoreUser | null;
+  reviewedAt?: string | null;
+  rejectionReason?: string | null;
 }
 
 @Injectable({
@@ -78,6 +88,17 @@ export class ScoreService {
   getRecentScores(limit = 10, offset = 0): Observable<ScoreRecord[]> {
     const params = this.buildPaginationParams(limit, offset);
     return this.http.get<ScoreRecord[]>(`${this.baseUrl}/scores/recent`, { params });
+  }
+
+  /**
+   * Get all scores submitted by the current user, including pending ones
+   */
+  getMySubmissions(limit = 20, offset = 0): Observable<ScoreRecord[]> {
+    const params = this.buildPaginationParams(limit, offset);
+    return this.http.get<ScoreRecord[]>(`${this.baseUrl}/scores/my-submissions`, {
+      params,
+      ...this.getAuthOptions()
+    });
   }
 
   private buildPaginationParams(limit: number, offset: number): HttpParams {

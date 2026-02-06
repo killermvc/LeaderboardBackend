@@ -9,6 +9,9 @@ import { MyGames } from './my-games/my-games';
 import { GameDetail } from './game-detail/game-detail';
 import { SearchResults } from './search-results/search-results';
 import { UserProfileComponent } from './user-profile/user-profile';
+import { PendingScoresComponent } from './pending-scores/pending-scores';
+import { MySubmissionsComponent } from './my-submissions/my-submissions';
+import { GameModeratorsComponent } from './game-moderators/game-moderators';
 
 export const routes: Routes = [
 	  {
@@ -28,12 +31,24 @@ export const routes: Routes = [
 		component: Games
 	  },
 	  {
+		path: 'games/:id/moderators',
+		component: GameModeratorsComponent
+	  },
+	  {
+		path: 'games/:id/pending-scores',
+		component: PendingScoresComponent
+	  },
+	  {
 		path: 'games/:id',
 		component: GameDetail
 	  },
 	  {
 		path: 'mygames',
 		component: MyGames
+	  },
+	  {
+		path: 'my-submissions',
+		component: MySubmissionsComponent
 	  },
 	  {
 		path: 'search',

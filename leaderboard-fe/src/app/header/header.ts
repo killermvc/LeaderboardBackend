@@ -56,6 +56,12 @@ export class Header {
 	routeToMyGames() {
 		this.router.navigate(['/mygames'])
 	}
+	routeToMySubmissions() {
+		this.router.navigate(['/my-submissions'])
+	}
+	routeToModeration() {
+		this.router.navigate(['/moderation/pending'])
+	}
 	routeToNewGame() {
 		throw new Error('Method not implemented.');
 	}

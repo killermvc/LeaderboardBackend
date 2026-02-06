@@ -1,0 +1,274 @@
+.my-submissions-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    color: #666;
+    margin: 0;
+  }
+}
+
+.loading-state,
+.error-state,
+.empty-state,
+.auth-warning {
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(180deg, rgba(3,19,40,0.6), rgba(8,30,45,0.6));
+  color: rgba(226, 243, 255, 0.95);
+  border-radius: 8px;
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  .hint {
+    color: rgba(226, 243, 255, 0.7);
+    font-size: 0.9rem;
+  }
+}
+
+.error-state {
+  background: #fff5f5;
+  color: #c53030;
+}
+
+.btn-primary {
+  background: #4299e1;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+
+  &:hover {
+    background: #3182ce;
+  }
+}
+
+// Stats Summary
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 18px rgba(2, 8, 23, 0.6);
+  color: rgba(226, 243, 255, 0.95);
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    color: rgba(226, 243, 255, 0.7);
+    font-size: 0.85rem;
+  }
+
+  &.pending .stat-value {
+    color: #d69e2e;
+  }
+
+  &.approved .stat-value {
+    color: #38a169;
+  }
+
+  &.rejected .stat-value {
+    color: #e53e3e;
+  }
+}
+
+// Submissions List
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.submission-card {
+  background: linear-gradient(180deg, rgba(6,18,30,0.6), rgba(8,24,38,0.6));
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 24px rgba(2, 8, 23, 0.6);
+  border-left: 4px solid rgba(255,255,255,0.04);
+  color: rgba(226, 243, 255, 0.95);
+
+  &.status-pending {
+    border-left-color: #d69e2e;
+  }
+
+  &.status-approved {
+    border-left-color: #38a169;
+  }
+
+  &.status-rejected {
+    border-left-color: #e53e3e;
+  }
+}
+
+.game-link {
+  background: none;
+  border: none;
+  color: #8dd8c3;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+    color: #bff1df;
+  }
+}
+
+.date {
+  color: rgba(226, 243, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #bfeee0;
+}
+
+.submission-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.game-link {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.date {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #333;
+}
+
+.submission-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  &.status-pending {
+    background: rgba(214,158,46,0.12);
+    color: #d69e2e;
+  }
+
+  &.status-approved {
+    background: rgba(56,161,105,0.12);
+    color: #38a169;
+  }
+
+  &.status-rejected {
+    background: rgba(229,62,62,0.12);
+    color: #e53e3e;
+  }
+}
+
+.review-info {
+  color: rgba(226, 243, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+.rejection-inline {
+  display: inline-block;
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(229,62,62,0.08);
+  color: #ffbcbc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.review-date {
+  display: inline-block;
+  margin-left: 0.75rem;
+  color: rgba(226, 243, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.rejection-info {
+  flex-basis: 100%;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+
+  .review-date {
+    color: rgba(226, 243, 255, 0.7);
+    font-size: 0.85rem;
+  }
+
+  .rejection-reason {
+    margin: 0.5rem 0 0;
+    padding: 0.75rem;
+    background: rgba(229,62,62,0.08);
+    border-radius: 4px;
+    color: #ffbcbc;
+    font-size: 0.9rem;
+  }
+}

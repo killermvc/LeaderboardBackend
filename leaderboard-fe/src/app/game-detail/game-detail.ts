@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GameService, Game } from '../core/game-service';
 import { ScoreService, LeaderboardEntry } from '../core/score-service';
 import { AuthService } from '../core/auth-service';
+import { ModerationService } from '../core/moderation-service';
 
 @Component({
   selector: 'app-game-detail',
@@ -19,6 +20,7 @@ export class GameDetail implements OnInit {
   private gameService = inject(GameService);
   private scoreService = inject(ScoreService);
   private authService = inject(AuthService);
+  private moderationService = inject(ModerationService);
   private fb = inject(FormBuilder);
 
   game = signal<Game | null>(null);
@@ -29,8 +31,10 @@ export class GameDetail implements OnInit {
   submitSuccess = signal<string | null>(null);
   submitError = signal<string | null>(null);
   submitting = signal(false);
+  canModerate = signal(false);
 
   isLoggedIn = computed(() => this.authService.isAuthenticated());
+  isAdmin = computed(() => this.authService.hasRole('Admin'));
 
   scoreForm = this.fb.group({
     score: [0, [Validators.required, Validators.min(0)]]
@@ -46,6 +50,7 @@ export class GameDetail implements OnInit {
 
     this.loadGame(gameId);
     this.loadLeaderboard(gameId);
+    this.checkModerationRights(gameId);
   }
 
   private loadGame(gameId: number) {
@@ -77,6 +82,21 @@ export class GameDetail implements OnInit {
     });
   }
 
+  private checkModerationRights(gameId: number) {
+    if (!this.isLoggedIn()) {
+      return;
+    }
+    
+    this.moderationService.canModerate(gameId).subscribe({
+      next: (result) => {
+        this.canModerate.set(result.canModerate);
+      },
+      error: () => {
+        this.canModerate.set(false);
+      }
+    });
+  }
+
   submitScore() {
     if (this.scoreForm.invalid || !this.game()) {
       return;
@@ -91,11 +111,10 @@ export class GameDetail implements OnInit {
 
     this.scoreService.submitScore(gameId, scoreValue).subscribe({
       next: () => {
-        this.submitSuccess.set('Score submitted successfully!');
+        this.submitSuccess.set('Score submitted successfully! It will appear on the leaderboard once approved by a moderator.');
         this.submitting.set(false);
         this.scoreForm.reset({ score: 0 });
-        // Refresh leaderboard after submission
-        this.loadLeaderboard(gameId);
+        // Note: We don't refresh the leaderboard immediately since the score is pending
       },
       error: (err) => {
         // If the backend rejected the score because it's not higher, show that message
@@ -118,5 +137,19 @@ export class GameDetail implements OnInit {
 
   goBack() {
     this.router.navigate(['/games']);
+  }
+
+  goToModerators() {
+    const gameId = this.game()?.id;
+    if (gameId) {
+      this.router.navigate(['/games', gameId, 'moderators']);
+    }
+  }
+
+  goToPendingScores() {
+    const gameId = this.game()?.id;
+    if (gameId) {
+      this.router.navigate(['/games', gameId, 'pending-scores']);
+    }
   }
 }

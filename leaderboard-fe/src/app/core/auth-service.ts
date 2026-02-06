@@ -116,7 +116,9 @@ export class AuthService {
 		const token = this.getToken();
 		const payload = token && this.decodeTokenPayload(token);
 		if (!payload) return false;
-		const roles = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+		const rolesRaw = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+		// If user has multiple roles, it's an array. If only one role, it's a string.
+		const roles = Array.isArray(rolesRaw) ? rolesRaw : (rolesRaw ? [rolesRaw] : []);
 		return roles.includes(role);
 	}
 
@@ -124,7 +126,9 @@ export class AuthService {
 		const token = this.getToken();
 		const payload = token && this.decodeTokenPayload(token);
 		if (!payload) return false;
-		const roles = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+		const rolesRaw = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+		// If user has multiple roles, it's an array. If only one role, it's a string.
+		const roles = Array.isArray(rolesRaw) ? rolesRaw : (rolesRaw ? [rolesRaw] : []);
 		return rolesToCheck.some(role => roles.includes(role));
 	}
 

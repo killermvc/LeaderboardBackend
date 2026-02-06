@@ -21,6 +21,15 @@
         @if (gameData.description) {
           <p class="description">{{ gameData.description }}</p>
         }
+        <!-- Admin/Moderator Actions -->
+        <div class="admin-actions">
+          @if (isAdmin()) {
+            <button class="btn-secondary" (click)="goToModerators()">🛡️ Manage Moderators</button>
+          }
+          @if (canModerate()) {
+            <button class="btn-secondary" (click)="goToPendingScores()">⏳ Review Pending Scores</button>
+          }
+        </div>
       </div>
     </header>
 

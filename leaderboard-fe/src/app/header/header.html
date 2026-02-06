@@ -11,6 +11,7 @@
 		</button>
 	</form>
 	@if (authService.isAuthenticated()) {
+		<button (click)="routeToMySubmissions()">My Submissions</button>
 		@if(authService.hasRole('Admin')) {
 			<button (click)="routeToNewGame()">
 				<ng-icon name="octPlus" size="24px"></ng-icon>

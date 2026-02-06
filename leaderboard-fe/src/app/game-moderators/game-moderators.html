@@ -1,0 +1,98 @@
+<div class="game-moderators-container">
+  <button class="back-btn" (click)="goBack()">← Back to Game</button>
+
+  @if (loading() && !game()) {
+    <div class="loading-state">
+      <p>Loading...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" routerLink="/games">Go to Games</button>
+    </div>
+  } @else if (game(); as gameData) {
+    <header class="page-header">
+      <h1>🛡️ Moderators for {{ gameData.name }}</h1>
+      <p class="subtitle">Manage who can approve or reject score submissions for this game</p>
+    </header>
+
+    <!-- Add Moderator Section -->
+    <section class="add-moderator-section">
+      <h2>Add New Moderator</h2>
+      <div class="search-form">
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          (input)="searchUsers()"
+          placeholder="Search for a user by username..."
+        />
+        @if (searching()) {
+          <span class="searching-indicator">Searching...</span>
+        }
+      </div>
+
+      @if (searchResults().length > 0) {
+        <ul class="search-results">
+          @for (user of searchResults(); track user.id) {
+            <li>
+              <span class="user-name">{{ user.username }}</span>
+              <button 
+                class="btn-add" 
+                (click)="addModerator(user.id)"
+                [disabled]="addingUserId() === user.id"
+              >
+                @if (addingUserId() === user.id) {
+                  Adding...
+                } @else {
+                  + Add as Moderator
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Current Moderators -->
+    <section class="moderators-section">
+      <h2>Current Moderators</h2>
+      
+      @if (loading()) {
+        <p class="loading-text">Loading moderators...</p>
+      } @else if (moderators().length === 0) {
+        <div class="empty-state">
+          <p>No moderators assigned to this game yet.</p>
+          <p class="hint">Global moderators will handle score approvals for this game.</p>
+        </div>
+      } @else {
+        <ul class="moderators-list">
+          @for (mod of moderators(); track mod.userId) {
+            <li [class.removing]="removingUserId() === mod.userId">
+              <div class="mod-info">
+                @if (mod.user) {
+                  <a [routerLink]="['/user', mod.userId]" class="mod-name">{{ mod.user.username }}</a>
+                } @else {
+                  <span class="mod-name">User #{{ mod.userId }}</span>
+                }
+                <span class="assigned-date">Added {{ formatDate(mod.assignedAt) }}</span>
+              </div>
+              <button 
+                class="btn-remove" 
+                (click)="removeModerator(mod.userId)"
+                [disabled]="removingUserId() === mod.userId"
+                aria-label="Remove moderator"
+              >
+                @if (removingUserId() === mod.userId) {
+                  <span class="btn-label">✖ Removing...</span>
+                } @else {
+                  <span class="btn-label">✖ Remove</span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

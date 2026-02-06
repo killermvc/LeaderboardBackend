@@ -1,0 +1,84 @@
+<div class="my-submissions-container">
+  <header class="page-header">
+    <h1>📊 My Score Submissions</h1>
+    <p class="subtitle">Track the status of your submitted scores</p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading your submissions...</p>
+    </div>
+  } @else if (!isAuthenticated()) {
+    <div class="auth-warning">
+      <p>You need to be logged in to view your submissions.</p>
+      <button class="btn-primary" (click)="goToLogin()">Login</button>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" (click)="loadSubmissions()">Try Again</button>
+    </div>
+  } @else if (submissions().length === 0) {
+    <div class="empty-state">
+      <p>📝 You haven't submitted any scores yet.</p>
+      <p class="hint">Play some games and submit your scores to see them here!</p>
+      <button class="btn-primary" routerLink="/games">Browse Games</button>
+    </div>
+  } @else {
+    <!-- Stats Summary -->
+    <div class="stats-summary">
+      <div class="stat-card">
+        <span class="stat-value">{{ submissions().length }}</span>
+        <span class="stat-label">Total Submissions</span>
+      </div>
+      <div class="stat-card pending">
+        <span class="stat-value">{{ pendingCount() }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-card approved">
+        <span class="stat-value">{{ approvedCount() }}</span>
+        <span class="stat-label">Approved</span>
+      </div>
+      <div class="stat-card rejected">
+        <span class="stat-value">{{ rejectedCount() }}</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+    </div>
+
+    <!-- Submissions List -->
+    <div class="submissions-list">
+      @for (score of submissions(); track score.id) {
+        <div class="submission-card" [class]="getStatusClass(score.status)">
+          <div class="submission-main">
+            <div class="game-info">
+              <button class="game-link" (click)="viewGame(score.game.id)">
+                {{ score.game.name }}
+              </button>
+              <span class="date">{{ formatDate(score.dateAchieved) }}</span>
+            </div>
+            <div class="score-value">{{ score.value | number }}</div>
+          </div>
+
+          <div class="submission-status">
+            <span class="status-badge" [class]="getStatusClass(score.status)">
+              {{ getStatusIcon(score.status) }} {{ getStatusLabel(score.status) }}
+            </span>
+
+            @if (score.status === ScoreStatus.Rejected) {
+              <span class="rejection-inline">
+                Reason: {{ score.rejectionReason || 'No reason provided.' }}
+              </span>
+              @if (score.reviewedAt) {
+                <span class="review-date">Rejected on {{ formatDate(score.reviewedAt) }}</span>
+              }
+            } @else if (score.status === ScoreStatus.Approved && score.reviewedAt) {
+              <span class="review-info">
+                Approved on {{ formatDate(score.reviewedAt) }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
